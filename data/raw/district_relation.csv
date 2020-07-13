@@ -1,0 +1,89 @@
+"","CNTRY_NAME","ADMIN_NAME","CNTRY_CODE","IPUM2012","DIST2012","PARENT","NEW_DIST_ID_2"
+"1","Zimbabwe","Bulawayo Urban","716","000021","021","000",1
+"2","Zimbabwe","Buhera","716","001001","101","001",3
+"3","Zimbabwe","Chimanimani","716","001002","102","001",4
+"4","Zimbabwe","Chipinge Rural","716","001003","103","001",5
+"5","Zimbabwe","Makoni","716","001004","104","001",6
+"6","Zimbabwe","Mutasa","716","001006","106","001",8
+"7","Zimbabwe","Nyanga","716","001007","107","001",9
+"8","Zimbabwe","Mutare Rural","716","001005","105","001",7
+"9","Zimbabwe","Bindura Rural","716","002001","201","002",10
+"10","Zimbabwe","Muzarabani","716","002002","202","002",11
+"11","Zimbabwe","Mazowe, Mvurwi","716","002004","204","002",13
+"12","Zimbabwe","Mt Darwin","716","002005","205","002",14
+"13","Zimbabwe","Rushinga","716","002006","206","002",15
+"14","Zimbabwe","Shamva","716","002007","207","002",16
+"15","Zimbabwe","Chegutu","716","004001","401","004",26
+"16","Zimbabwe","Hurungwe, Karoi","716","004002","402","004",27
+"17","Zimbabwe","Sanyati","716","004007","407","004",28
+"18","Zimbabwe","Kariba Rural","716","004004","404","004",29
+"19","Zimbabwe","Makonde","716","004005","405","004",30
+"20","Zimbabwe","Zvimba","716","004006","406","004",31
+"21","Zimbabwe","Bikita","716","008001","801","008",32
+"22","Zimbabwe","Chiredzi Rural","716","008002","802","008",33
+"23","Zimbabwe","Chivi","716","008003","803","008",34
+"24","Zimbabwe","Gutu","716","008004","804","008",35
+"25","Zimbabwe","Masvingo Rural","716","008005","805","008",36
+"26","Zimbabwe","Mwenezi","716","008006","806","008",37
+"27","Zimbabwe","Zaka","716","008007","807","008",38
+"28","Zimbabwe","Beitbridge Rural","716","006001","601","006",46
+"29","Zimbabwe","Gwanda Rural","716","006004","604","006",48
+"30","Zimbabwe","Insiza","716","006005","605","006",49
+"31","Zimbabwe","Matobo","716","006006","606","006",51
+"32","Zimbabwe","Umzingwane","716","006007","607","006",52
+"33","Zimbabwe","Chirumanzu","716","007001","701","007",53
+"34","Zimbabwe","Gweru Rural","716","007004","704","007",56
+"35","Zimbabwe","Kwekwe Rural","716","007005","705","007",57
+"36","Zimbabwe","Mberengwa","716","007006","706","007",58
+"37","Zimbabwe","Shurugwi Rural","716","007007","707","007",59
+"38","Zimbabwe","Zvishavane Rural","716","007008","708","007",60
+"39","Zimbabwe","Gokwe North","716","007002","702","007",54
+"40","Zimbabwe","Gokwe South","716","007003","703","007",55
+"41","Zimbabwe","Binga","716","005001","501","005",39
+"42","Zimbabwe","BUBI","716","005002","502","005",40
+"43","Zimbabwe","Lupane","716","005004","504","005",42
+"44","Zimbabwe","Nkayi","716","005005","505","005",43
+"45","Zimbabwe","Tsholotsho","716","005006","506","005",44
+"46","Zimbabwe","Umguza","716","005007","507","005",45
+"47","Zimbabwe","Hwange Rural","716","005003","503","005",41
+"48","Zimbabwe","Hwedza","716","003003","303","003",25
+"49","Zimbabwe","Marondera Rural","716","003004","304","003",19
+"50","Zimbabwe","Mudzi","716","003005","305","003",20
+"51","Zimbabwe","Murehwa","716","003006","306","003",21
+"52","Zimbabwe","Mutoko","716","003007","307","003",22
+"53","Zimbabwe","Seke","716","003008","308","003",23
+"54","Zimbabwe","Uzumba Maramba Pfungwe","716","003009","309","003",24
+"55","Zimbabwe","Chikomba","716","003001","301","003",17
+"56","Zimbabwe","Chitungwiza","716","009022","922","009",2
+"57","Zimbabwe","Harare Rural","716","009001","901","009",2
+"58","Zimbabwe","Bulilima","716","006002","602","006",47
+"59","Zimbabwe","Mangwe Rural, Mangwe Urban (Plumtree)","716","006003","603","006",50
+"60","Zimbabwe","Guruve","716","002003","203","002",12
+"61","Zimbabwe","Mbire","716","002008","208","002",12
+"62","Zimbabwe","Rusape Urban","716","001022","122","001",6
+"63","Zimbabwe","Ruwa","716","003023","323","003",18
+"64","Zimbabwe","Goromonzi","716","003002","302","003",18
+"65","Zimbabwe","Marondera Urban","716","003021","321","003",19
+"66","Zimbabwe","Kariba Urban","716","004024","424","004",29
+"67","Zimbabwe","Chinhoyi","716","004021","421","004",30
+"68","Zimbabwe","Kadoma","716","004022","422","004",28
+"69","Zimbabwe","Norton","716","004025","425","004",26
+"70","Zimbabwe","Hwange Urban","716","005021","521","005",41
+"71","Zimbabwe","Victoria Falls","716","005022","522","005",41
+"72","Zimbabwe","Beitbridge Urban","716","006022","622","006",46
+"73","Zimbabwe","Kwekwe Urban","716","007022","722","007",57
+"74","Zimbabwe","Shurugwi Urban","716","007026","726","007",59
+"75","Zimbabwe","Zvishavane Urban","716","007024","724","007",60
+"76","Zimbabwe","Gokwe Centre","716","007025","725","007",55
+"77","Zimbabwe","Redcliff","716","007023","723","007",57
+"78","Zimbabwe","Gweru Urban","716","007021","721","007",56
+"79","Zimbabwe","Masvingo Urban","716","008021","821","008",36
+"80","Zimbabwe","Chiredzi Town","716","008022","822","008",33
+"81","Zimbabwe","Epworth","716","009023","923","009",2
+"82","Zimbabwe","Harare Urban","716","009021","921","009",2
+"83","Zimbabwe","Mutare Urban","716","001021","121","001",7
+"84","Zimbabwe","Chipinge Urban","716","001023","123","001",5
+"85","Zimbabwe","Chegutu Urban","716","004023","423","004",26
+"86","Zimbabwe","Mhondoro-Ngezi","716","004003","403","004",28
+"87","Zimbabwe","Gwanda Urban","716","006021","621","006",48
+"88","Zimbabwe","Bindura Urban","716","002021","221","002",10

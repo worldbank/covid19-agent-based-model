@@ -2,3 +2,8 @@
 *
 # Except this file
 !.gitignore
+!district_pop_dens_friction.csv
+!district_relation.csv
+!final_close_interaction_matrix.xlsx
+!risk
+!shapefiles
