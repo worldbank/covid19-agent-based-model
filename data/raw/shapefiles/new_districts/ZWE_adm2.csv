@@ -1,0 +1,61 @@
+"OBJECTID","ID_0","ISO","NAME_0","ID_1","NAME_1","ID_2","NAME_2","TYPE_2","ENGTYPE_2","NL_NAME_2","VARNAME_2"
+1,256,"ZWE","Zimbabwe",1,"Bulawayo",1,"Bulawayo","District","District",NA,NA
+2,256,"ZWE","Zimbabwe",2,"Harare",2,"Harare","District","District",NA,"Salisbury|Harare Urban"
+3,256,"ZWE","Zimbabwe",3,"Manicaland",3,"Buhera","District","District",NA,NA
+4,256,"ZWE","Zimbabwe",3,"Manicaland",4,"Chimanimani","District","District",NA,NA
+5,256,"ZWE","Zimbabwe",3,"Manicaland",5,"Chipinge","District","District",NA,NA
+6,256,"ZWE","Zimbabwe",3,"Manicaland",6,"Makoni","District","District",NA,NA
+7,256,"ZWE","Zimbabwe",3,"Manicaland",7,"Mutare","District","District",NA,"Umtali"
+8,256,"ZWE","Zimbabwe",3,"Manicaland",8,"Mutasa","District","District",NA,NA
+9,256,"ZWE","Zimbabwe",3,"Manicaland",9,"Nyanga","District","District",NA,NA
+10,256,"ZWE","Zimbabwe",4,"Mashonaland Central",10,"Bindura","District","District",NA,NA
+11,256,"ZWE","Zimbabwe",4,"Mashonaland Central",11,"Centenary","District","District",NA,"Muzarambani"
+12,256,"ZWE","Zimbabwe",4,"Mashonaland Central",12,"Guruve","District","District",NA,"Sipolilo"
+13,256,"ZWE","Zimbabwe",4,"Mashonaland Central",13,"Mazowe","District","District",NA,NA
+14,256,"ZWE","Zimbabwe",4,"Mashonaland Central",14,"Mount Darwin","District","District",NA,"Mt Darwin"
+15,256,"ZWE","Zimbabwe",4,"Mashonaland Central",15,"Rushinga","District","District",NA,NA
+16,256,"ZWE","Zimbabwe",4,"Mashonaland Central",16,"Shamva","District","District",NA,NA
+17,256,"ZWE","Zimbabwe",5,"Mashonaland East",17,"Chikomba","District","District",NA,NA
+18,256,"ZWE","Zimbabwe",5,"Mashonaland East",18,"Goromonzi","District","District",NA,NA
+19,256,"ZWE","Zimbabwe",5,"Mashonaland East",19,"Marondera","District","District",NA,"Marandellas"
+20,256,"ZWE","Zimbabwe",5,"Mashonaland East",20,"Mudzi","District","District",NA,NA
+21,256,"ZWE","Zimbabwe",5,"Mashonaland East",21,"Murehwa","District","District",NA,NA
+22,256,"ZWE","Zimbabwe",5,"Mashonaland East",22,"Mutoko","District","District",NA,NA
+23,256,"ZWE","Zimbabwe",5,"Mashonaland East",23,"Seke","District","District",NA,NA
+24,256,"ZWE","Zimbabwe",5,"Mashonaland East",24,"UMP","District","District",NA,"Murehwa U.M.P."
+25,256,"ZWE","Zimbabwe",5,"Mashonaland East",25,"Wedza","District","District",NA,"Hwedza"
+26,256,"ZWE","Zimbabwe",6,"Mashonaland West",26,"Chegutu","District","District",NA,NA
+27,256,"ZWE","Zimbabwe",6,"Mashonaland West",27,"Hurungwe","District","District",NA,"Karoi|Urungwe"
+28,256,"ZWE","Zimbabwe",6,"Mashonaland West",28,"Kadoma","District","District",NA,"Gatooma"
+29,256,"ZWE","Zimbabwe",6,"Mashonaland West",29,"Kariba","District","District",NA,NA
+30,256,"ZWE","Zimbabwe",6,"Mashonaland West",30,"Makonde","District","District",NA,"Lomagundi"
+31,256,"ZWE","Zimbabwe",6,"Mashonaland West",31,"Zvimba","District","District",NA,NA
+32,256,"ZWE","Zimbabwe",7,"Masvingo",32,"Bikita","District","District",NA,NA
+33,256,"ZWE","Zimbabwe",7,"Masvingo",33,"Chiredzi","District","District",NA,"Hartley"
+34,256,"ZWE","Zimbabwe",7,"Masvingo",34,"Chivi","District","District",NA,NA
+35,256,"ZWE","Zimbabwe",7,"Masvingo",35,"Gutu","District","District",NA,NA
+36,256,"ZWE","Zimbabwe",7,"Masvingo",36,"Masvingo","District","District",NA,"Victoria"
+37,256,"ZWE","Zimbabwe",7,"Masvingo",37,"Mwenezi","District","District",NA,NA
+38,256,"ZWE","Zimbabwe",7,"Masvingo",38,"Zaka","District","District",NA,NA
+39,256,"ZWE","Zimbabwe",8,"Matabeleland North",39,"Binga","District","District",NA,NA
+40,256,"ZWE","Zimbabwe",8,"Matabeleland North",40,"Bubi","District","District",NA,NA
+41,256,"ZWE","Zimbabwe",8,"Matabeleland North",41,"Hwange","District","District",NA,"Wankie"
+42,256,"ZWE","Zimbabwe",8,"Matabeleland North",42,"Lupane","District","District",NA,NA
+43,256,"ZWE","Zimbabwe",8,"Matabeleland North",43,"Nkayi","District","District",NA,NA
+44,256,"ZWE","Zimbabwe",8,"Matabeleland North",44,"Tsholotsho","District","District",NA,NA
+45,256,"ZWE","Zimbabwe",8,"Matabeleland North",45,"Umguza","District","District",NA,NA
+46,256,"ZWE","Zimbabwe",9,"Matabeleland South",46,"Beitbridge","District","District",NA,NA
+47,256,"ZWE","Zimbabwe",9,"Matabeleland South",47,"Bulilima (North)","District","District",NA,"Bulalimamangwe|Bulilima"
+48,256,"ZWE","Zimbabwe",9,"Matabeleland South",48,"Gwanda","District","District",NA,NA
+49,256,"ZWE","Zimbabwe",9,"Matabeleland South",49,"Insiza","District","District",NA,NA
+50,256,"ZWE","Zimbabwe",9,"Matabeleland South",50,"Mangwe (South)","District","District",NA,"Bulalimamangwe South"
+51,256,"ZWE","Zimbabwe",9,"Matabeleland South",51,"Matobo","District","District",NA,NA
+52,256,"ZWE","Zimbabwe",9,"Matabeleland South",52,"Umzingwane","District","District",NA,NA
+53,256,"ZWE","Zimbabwe",10,"Midlands",53,"Chirumhanzu","District","District",NA,"Chirumanzu"
+54,256,"ZWE","Zimbabwe",10,"Midlands",54,"Gokwe North","District","District",NA,"Gokwe"
+55,256,"ZWE","Zimbabwe",10,"Midlands",55,"Gokwe South","District","District",NA,"Gokwe"
+56,256,"ZWE","Zimbabwe",10,"Midlands",56,"Gweru","District","District",NA,"Gwelo"
+57,256,"ZWE","Zimbabwe",10,"Midlands",57,"Kwekwe","District","District",NA,"Que Que"
+58,256,"ZWE","Zimbabwe",10,"Midlands",58,"Mberengwa","District","District",NA,"Mberingwe"
+59,256,"ZWE","Zimbabwe",10,"Midlands",59,"Shurugwi","District","District",NA,"Selukwe"
+60,256,"ZWE","Zimbabwe",10,"Midlands",60,"Zvishavane","District","District",NA,"Shabani, Shavani"
