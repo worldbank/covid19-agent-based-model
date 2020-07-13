@@ -183,7 +183,7 @@ class ParamsConfig:
     WARD_MOVEMENT_ALLOWED_AGE = 18
 
     def __init__(
-        self, data_dir, district='old', data_sample_size=5, R0=None,
+        self, district='old', data_sample_size=5, R0=None,
         interaction_matrix_file='final_close_interaction_matrix.xlsx',
         stay_duration_file='weekday_mobility_duration_count_df.pickle',
         transition_probability_file='daily_region_transition_probability.csv',
@@ -223,16 +223,16 @@ class ParamsConfig:
             age: self.R0 / ((timedelta(days=self.SYMPTOMATIC_CONTAGIOUS_PERIOD_MEAN) / self.step_timedelta) * self.per_capita_contact_rates.iloc[(self.per_capita_contact_rates.index >= age).argmax()]) for age in self.ages})
         self.AGE_SYMPTOMATIC_INFECTION_RATE_VALUES = self.AGE_SYMPTOMATIC_INFECTION_RATE[sorted(self.ages)].values
 
-        self.set_interaction_parameters(data_dir, interaction_matrix_file)
+        self.set_interaction_parameters(interaction_matrix_file)
 
         self.WARD_MOVING_ECONOMIC_STATUS = set([i for i, j in self.ECONOMIC_STATUS_WEEKDAY_MOVEMENT_PROBABILITY.items() if j > 0])
         self.WARD_MOVING_ECONOMIC_STATUS.remove('In School')
 
         # Values in hours
-        self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX = pd.read_pickle(os.path.join(data_dir, stay_duration_file))
+        self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX = pd.read_pickle(stay_duration_file)
         self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX[['avg_duration', 'stddev_duration']] = self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX[['avg_duration', 'stddev_duration']] + 0.001
 
-        self.DAILY_WARD_TRANSITION_PROBABILITY = pd.read_csv(os.path.join(data_dir, transition_probability_file), index_col=[0, 1])
+        self.DAILY_WARD_TRANSITION_PROBABILITY = pd.read_csv(transition_probability_file, index_col=[0, 1])
         self.DAILY_WARD_TRANSITION_PROBABILITY = self.DAILY_WARD_TRANSITION_PROBABILITY.loc[sorted(self.DAILY_WARD_TRANSITION_PROBABILITY.index)]
 
         self.WARD_IDS = sorted(self.DAILY_WARD_TRANSITION_PROBABILITY.columns)
@@ -252,21 +252,19 @@ class ParamsConfig:
         self.blocked = False
         self.lockdown = False
 
-    def set_interaction_parameters(self, data_dir, interaction_matrix_file):
+    def set_interaction_parameters(self, interaction_matrix_file):
         # This matrix defines the probability of an interaction between two economic status.
         # This will be multiplied by the population density per ward to quantify the mixing intensity per ward.
         # ECONOMIC_STATUS_INTERACTION_MATRIX = {'employed': {'unemployed'}}
         self.ECONOMIC_STATUS_INTERACTION_MATRIX = pd.read_excel(
-            # os.path.join(data_dir, 'final_interaction_matrix.xlsx'),
-            os.path.join(data_dir, interaction_matrix_file),
+            interaction_matrix_file,
             sheet_name='interaction_matrix', index_col=0)
 
         self.ECONOMIC_STATUS_INTERACTION_SIZE_MAP = pd.read_excel(
-            # os.path.join(data_dir, 'final_interaction_matrix.xlsx'),
-            os.path.join(data_dir, interaction_matrix_file),
+            interaction_matrix_file,
             sheet_name='interactions', index_col=0)['interactions']
 
-        self.WARD_POP_DENSITY = pd.read_csv(os.path.join(data_dir, 'district_pop_dens_friction.csv'))
+        # self.WARD_POP_DENSITY = pd.read_csv(os.path.join(data_dir, 'district_pop_dens_friction.csv'))
 
         self.ECONOMIC_STATUS_INTERACTION_MATRIX_CUMSUM = self.ECONOMIC_STATUS_INTERACTION_MATRIX.cumsum(axis=1)
         self.ECON_STAT_ID_TO_NAME = dict(enumerate(self.ECONOMIC_STATUS_INTERACTION_MATRIX_CUMSUM.columns))
@@ -343,9 +341,7 @@ class ParamsConfig:
     def scenario_test_interaction_matrix_sensitivity(self):
         self.SCENARIO = 'INTERACTION_MATRIX_SENSITIVITY'
         self.set_interaction_parameters(
-            data_dir=get_data_dir('raw'),
-            interaction_matrix_file='sensitivity_interaction_matrix.xlsx'
-        )
+            get_data_dir('raw', 'sensitivity_interaction_matrix.xlsx'))
 
     def scenario_handwashing_risk(self):
         self.SCENARIO = 'HANDWASHING_RISK'
