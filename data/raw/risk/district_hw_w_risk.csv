@@ -1,0 +1,61 @@
+"GID_0","NAME_0","GID_1","NAME_1","NL_NAME_1","GID_2","NAME_2","VARNAME_2","NL_NAME_2","TYPE_2","ENGTYPE_2","CC_2","HASC_2","total_pop","mean_hw_risk_pop_weighted","mean_w_risk_pop_weighted"
+"ZWE","Zimbabwe","ZWE.1_1","Bulawayo",NA,"ZWE.1.1_1","Bulawayo",NA,NA,"District","District",NA,"ZW.BU.BL",626025.048538208,0.249270638656487,0.127704620287209
+"ZWE","Zimbabwe","ZWE.2_1","Harare",NA,"ZWE.2.1_1","Harare","Salisbury|Harare Urban",NA,"District","District",NA,"ZW.HA",2286594.13109589,0.477575537059436,0.519639456969702
+"ZWE","Zimbabwe","ZWE.3_1","Manicaland",NA,"ZWE.3.1_1","Buhera",NA,NA,"District","District",NA,"ZW.MA.BH",268447.217191577,0.479302054970082,0.761762098032377
+"ZWE","Zimbabwe","ZWE.3_1","Manicaland",NA,"ZWE.3.2_1","Chimanimani",NA,NA,"District","District",NA,"ZW.MA.CM",147919.868815422,0.416259913063598,0.730825307892018
+"ZWE","Zimbabwe","ZWE.3_1","Manicaland",NA,"ZWE.3.3_1","Chipinge",NA,NA,"District","District",NA,"ZW.MA.CP",351443.990964413,0.461101896298722,0.81584448076274
+"ZWE","Zimbabwe","ZWE.3_1","Manicaland",NA,"ZWE.3.4_1","Makoni",NA,NA,"District","District",NA,"ZW.MA.MN",329283.790835261,0.373938761540224,0.644601343478814
+"ZWE","Zimbabwe","ZWE.3_1","Manicaland",NA,"ZWE.3.5_1","Mutare","Umtali",NA,"District","District",NA,"ZW.MA.MR",493257.869412541,0.402190236258061,0.558503701056624
+"ZWE","Zimbabwe","ZWE.3_1","Manicaland",NA,"ZWE.3.6_1","Mutasa",NA,NA,"District","District",NA,"ZW.MA.MS",180575.686925769,0.371843545659067,0.585402243267939
+"ZWE","Zimbabwe","ZWE.3_1","Manicaland",NA,"ZWE.3.7_1","Nyanga",NA,NA,"District","District",NA,"ZW.MA.NY",138414.355266094,0.356859049460505,0.77980315995235
+"ZWE","Zimbabwe","ZWE.4_1","Mashonaland Central",NA,"ZWE.4.1_1","Bindura",NA,NA,"District","District",NA,"ZW.MC.BD",189677.604533195,0.310974937594879,0.648852753352197
+"ZWE","Zimbabwe","ZWE.4_1","Mashonaland Central",NA,"ZWE.4.2_1","Centenary","Muzarambani",NA,"District","District",NA,"ZW.MC.MZ",137625.890707493,0.330781985338809,0.933510508177754
+"ZWE","Zimbabwe","ZWE.4_1","Mashonaland Central",NA,"ZWE.4.3_1","Guruve","Sipolilo",NA,"District","District",NA,"ZW.MC.GV",230287.633112431,0.374195646685059,0.940729720845944
+"ZWE","Zimbabwe","ZWE.4_1","Mashonaland Central",NA,"ZWE.4.4_1","Mazowe",NA,NA,"District","District",NA,"ZW.MC.ME",278751.031470358,0.36568659355448,0.728127134447052
+"ZWE","Zimbabwe","ZWE.4_1","Mashonaland Central",NA,"ZWE.4.5_1","Mount Darwin","Mt Darwin",NA,"District","District",NA,"ZW.MC.MD",239242.512317657,0.329769712391716,0.955606082280145
+"ZWE","Zimbabwe","ZWE.4_1","Mashonaland Central",NA,"ZWE.4.6_1","Rushinga",NA,NA,"District","District",NA,"ZW.MC.RU",83100.8795900345,0.379757244925886,0.977336645290422
+"ZWE","Zimbabwe","ZWE.4_1","Mashonaland Central",NA,"ZWE.4.7_1","Shamva",NA,NA,"District","District",NA,"ZW.MC.SM",138239.611190319,0.328171926010428,0.857130033311845
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.1_1","Chikomba",NA,NA,"District","District",NA,"ZW.ME.CK",139270.749994993,0.415118161252988,0.67742441299536
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.2_1","Goromonzi",NA,NA,"District","District",NA,"ZW.ME.GM",333728.980563641,0.508362635014499,0.769534944952547
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.3_1","Marondera","Marandellas",NA,"District","District",NA,"ZW.ME.MA",207500.656777382,0.372522476518887,0.595944222999074
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.4_1","Mudzi",NA,NA,"District","District",NA,"ZW.ME.MI",154259.114684105,0.408377459120661,0.876887325845612
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.5_1","Murehwa",NA,NA,"District","District",NA,"ZW.ME.MU",229419.050465584,0.367339157353356,0.69733439391691
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.6_1","Mutoko",NA,NA,"District","District",NA,"ZW.ME.MO",168786.822123528,0.375018149490067,0.728931664600678
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.7_1","Seke",NA,NA,"District","District",NA,"ZW.ME.SE",116893.204179406,0.514128515176562,0.731312101498482
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.8_1","UMP","Murehwa U.M.P.",NA,"District","District",NA,"ZW.ME.MU",127892.178499222,0.363192686427092,0.852427671741931
+"ZWE","Zimbabwe","ZWE.5_1","Mashonaland East",NA,"ZWE.5.9_1","Wedza","Hwedza",NA,"District","District",NA,"ZW.ME.WE",83387.2416000366,0.412394094843603,0.731404711014046
+"ZWE","Zimbabwe","ZWE.6_1","Mashonaland West",NA,"ZWE.6.1_1","Chegutu",NA,NA,"District","District",NA,"ZW.MW.CG",319572.157024145,0.350243026314136,0.630356837448442
+"ZWE","Zimbabwe","ZWE.6_1","Mashonaland West",NA,"ZWE.6.2_1","Hurungwe","Karoi|Urungwe",NA,"District","District",NA,"ZW.MW.HU",420154.389377937,0.272154940364872,0.901634292489754
+"ZWE","Zimbabwe","ZWE.6_1","Mashonaland West",NA,"ZWE.6.3_1","Kadoma","Gatooma",NA,"District","District",NA,"ZW.MW.KD",364759.169853449,0.286581250510869,0.663057896179925
+"ZWE","Zimbabwe","ZWE.6_1","Mashonaland West",NA,"ZWE.6.4_1","Kariba",NA,NA,"District","District",NA,"ZW.MW.KR",80665.5847379044,0.344758976811715,0.695773770932741
+"ZWE","Zimbabwe","ZWE.6_1","Mashonaland West",NA,"ZWE.6.5_1","Makonde","Lomagundi",NA,"District","District",NA,"ZW.MW.MK",269657.94576928,0.321136079010847,0.664654366790562
+"ZWE","Zimbabwe","ZWE.6_1","Mashonaland West",NA,"ZWE.6.6_1","Zvimba",NA,NA,"District","District",NA,"ZW.MW.ZB",319735.783956058,0.421348607989988,0.677798741292287
+"ZWE","Zimbabwe","ZWE.7_1","Masvingo",NA,"ZWE.7.1_1","Bikita",NA,NA,"District","District",NA,"ZW.MV.BK",178449.211874723,0.547813159921638,0.856273554932333
+"ZWE","Zimbabwe","ZWE.7_1","Masvingo",NA,"ZWE.7.2_1","Chiredzi","Hartley",NA,"District","District",NA,"ZW.MV.CR",337110.528319128,0.54540055010464,0.726506801777403
+"ZWE","Zimbabwe","ZWE.7_1","Masvingo",NA,"ZWE.7.3_1","Chivi",NA,NA,"District","District",NA,"ZW.MV.CV",180841.229661942,0.627550310819755,0.927938986673833
+"ZWE","Zimbabwe","ZWE.7_1","Masvingo",NA,"ZWE.7.4_1","Gutu",NA,NA,"District","District",NA,"ZW.MV.GT",222207.387745619,0.476851240082753,0.750024070090483
+"ZWE","Zimbabwe","ZWE.7_1","Masvingo",NA,"ZWE.7.5_1","Masvingo","Victoria",NA,"District","District",NA,"ZW.MV.MV",329180.567079991,0.483714401018555,0.73288865089804
+"ZWE","Zimbabwe","ZWE.7_1","Masvingo",NA,"ZWE.7.6_1","Mwenezi",NA,NA,"District","District",NA,"ZW.MV.MW",183435.009072721,0.562033241784725,0.822447053527145
+"ZWE","Zimbabwe","ZWE.7_1","Masvingo",NA,"ZWE.7.7_1","Zaka",NA,NA,"District","District",NA,"ZW.MV.ZA",198770.882119626,0.530775529128998,0.913037696323355
+"ZWE","Zimbabwe","ZWE.8_1","Matabeleland North",NA,"ZWE.8.1_1","Binga",NA,NA,"District","District",NA,"ZW.MN.BG",145689.540070865,0.655349597428168,0.933704031766908
+"ZWE","Zimbabwe","ZWE.8_1","Matabeleland North",NA,"ZWE.8.2_1","Bubi",NA,NA,"District","District",NA,"ZW.MN.BU",64449.2963659465,0.449466677927489,0.823827795897295
+"ZWE","Zimbabwe","ZWE.8_1","Matabeleland North",NA,"ZWE.8.3_1","Hwange","Wankie",NA,"District","District",NA,"ZW.MN.HW",157071.715121903,0.368452406770446,0.667519183154781
+"ZWE","Zimbabwe","ZWE.8_1","Matabeleland North",NA,"ZWE.8.4_1","Lupane",NA,NA,"District","District",NA,"ZW.MN.LU",86792.1815314293,0.628889287071215,0.93197726596657
+"ZWE","Zimbabwe","ZWE.8_1","Matabeleland North",NA,"ZWE.8.5_1","Nkayi",NA,NA,"District","District",NA,"ZW.MN.NK",114349.007436275,0.521911635153369,0.932872202792182
+"ZWE","Zimbabwe","ZWE.8_1","Matabeleland North",NA,"ZWE.8.6_1","Tsholotsho",NA,NA,"District","District",NA,"ZW.MN.TS",119849.075783789,0.503246749004239,0.943873585006242
+"ZWE","Zimbabwe","ZWE.8_1","Matabeleland North",NA,"ZWE.8.7_1","Umguza",NA,NA,"District","District",NA,"ZW.MN.UG",102477.617293119,0.384828032822162,0.623739361542415
+"ZWE","Zimbabwe","ZWE.9_1","Matabeleland South",NA,"ZWE.9.1_1","Beitbridge",NA,NA,"District","District",NA,"ZW.MS.BB",123743.9860605,0.480468276985689,0.641510087976984
+"ZWE","Zimbabwe","ZWE.9_1","Matabeleland South",NA,"ZWE.9.2_1","Bulilima (North)","Bulalimamangwe|Bulilima",NA,"District","District",NA,"ZW.MS.BM",82806.8758376837,0.408203176780575,0.860102121743574
+"ZWE","Zimbabwe","ZWE.9_1","Matabeleland South",NA,"ZWE.9.3_1","Gwanda",NA,NA,"District","District",NA,"ZW.MS.GD",141111.422362924,0.568119448131262,0.887357380102558
+"ZWE","Zimbabwe","ZWE.9_1","Matabeleland South",NA,"ZWE.9.4_1","Insiza",NA,NA,"District","District",NA,"ZW.MS.IN",104736.051420331,0.58309982411993,0.940333067070334
+"ZWE","Zimbabwe","ZWE.9_1","Matabeleland South",NA,"ZWE.9.5_1","Mangwe (South)","Bulalimamangwe South",NA,"District","District",NA,"ZW.MS.MG",84309.4908524752,0.392244682336893,0.758173537598271
+"ZWE","Zimbabwe","ZWE.9_1","Matabeleland South",NA,"ZWE.9.6_1","Matobo",NA,NA,"District","District",NA,"ZW.MS.MT",97231.3961884975,0.452699299831254,0.828134438211733
+"ZWE","Zimbabwe","ZWE.9_1","Matabeleland South",NA,"ZWE.9.7_1","Umzingwane",NA,NA,"District","District",NA,"ZW.MS.UZ",64952.5979311466,0.47100630726713,0.939596060526607
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.1_1","Chirumhanzu","Chirumanzu",NA,"District","District",NA,"ZW.MI.CH",86621.9000310898,0.497757616291095,0.68040297414927
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.2_1","Gokwe North","Gokwe",NA,"District","District",NA,"ZW.MI.GN",257538.065981388,0.613240830387723,0.97994473276596
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.3_1","Gokwe South","Gokwe",NA,"District","District",NA,"ZW.MI.GS",356041.471254826,0.623923563218156,0.929102762562315
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.4_1","Gweru","Gwelo",NA,"District","District",NA,"ZW.MI.GW",270595.468783021,0.432551069522351,0.482301229265901
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.5_1","Kwekwe","Que Que",NA,"District","District",NA,"ZW.MI.KW",337517.201326206,0.398070637755204,0.487197505124617
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.6_1","Mberengwa","Mberingwe",NA,"District","District",NA,"ZW.MI.MB",196141.497195661,0.692165881978802,0.959139370393751
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.7_1","Shurugwi","Selukwe",NA,"District","District",NA,"ZW.MI.SR",107855.125550985,0.539611203478366,0.798214385488829
+"ZWE","Zimbabwe","ZWE.10_1","Midlands",NA,"ZWE.10.8_1","Zvishavane","Shabani, Shavani",NA,"District","District",NA,"ZW.MI.ZV",130809.650128841,0.683530889543169,0.828817022902625
