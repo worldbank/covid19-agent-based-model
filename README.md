@@ -16,17 +16,25 @@ The model also incorporates Water, Sanitation, and Hygiene (WASH) and co-morbidi
 
 Since the agents in the model possess economic activity information, this allows the simulation of scenarios such as schools closure and opening of certain sectors of the economy.
 
-To improve the speed of the model to simulate millions of agents, a time-to-next-event strategy and a vectorized implementation was done.
+To improve the speed of the model to simulate millions of agents, a **time-to-next-event strategy** and a **vectorized implementation** was done.
 
 ## Sample output
 
 The following visualizations are generated from the output of the model. Shown below is a graph of the disease case trajectories for various scenarios. Also shown are example spatiotemporal propagation of the outbreak for both unmitigated and a lockdown scenario.
 
+### Case trajectories
+
 ![active-cases-R1.9](reports/figures/active-cases-R1.9.png)
 
+### Spatiotemporal propagation in unmitigated scenario
 ![animated-unmitigated](reports/figures/animated-unmitigated.gif)
 
+Without any mitigation, we see a sweeping spread of the disease across the entire region which will result to massive undersupply of healthcare facilities.
+
+### Spatiotemporal propagation in a selective lockdwon scenario
 ![animated-lockdown](reports/figures/animated-lockdown.gif)
+
+In this scenario, we can see that multiple waves of infection is likely to be expected in a policy where only districts with high mobility are put on lockdown.
 
 ## Data dependency
 
@@ -67,3 +75,9 @@ Additional parameters are contained in `src/covid19_abm/params.py`.
 2. A script in `scripts/run_simulation_scenarios_full_data.py` can be configured to identify which scenarios will be simulated and basic parameters such as `R0` can be defined.
 
 3. Specification of scenarios are defined in `src/covid19_abm/scenario_models.py`
+
+## Notice
+
+This repository may contain some codes and/or notebooks that may break since this was migrated from a different workspace. Kindly report any problems using Github's issues or e-mail me at asolatorio@worldbank.org.
+
+Any errors found in the model implementation and/or logic are highly encouraged to be reported using the same channel.
