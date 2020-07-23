@@ -18,6 +18,16 @@ Since the agents in the model possess economic activity information, this allows
 
 To improve the speed of the model to simulate millions of agents, a time-to-next-event strategy and a vectorized implementation was done.
 
+## Sample output
+
+The following visualizations are generated from the output of the model. Shown below is a graph of the disease case trajectories for various scenarios. Also shown are example spatiotemporal propagation of the outbreak for both unmitigated and a lockdown scenario.
+
+![active-cases-R1.9](reports/figures/active-cases-R1.9.png)
+
+![animated-unmitigated](reports/figures/animated-unmitigated.gif)
+
+![animated-lockdown](reports/figures/animated-lockdown.gif)
+
 ## Data dependency
 
 The model uses the following data to model various scenarios:
