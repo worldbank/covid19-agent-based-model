@@ -60,21 +60,21 @@ The model uses the following data to model various scenarios:
 
 Most of the input data come from raw data sources. Notebooks used to process the raw data into formats accepted by the model are found in the `notebooks` directory.
 
-The preprocessing notebook needed to generate the input for the agents data is found in `notebooks/census/Zimbabwe Raw Data Full Simulated School Mining Manufacturing.ipynb`.
+The preprocessing notebook needed to generate the input for the agents data is found in [`notebooks/census/Zimbabwe Raw Data Full Simulated School Mining Manufacturing.ipynb`](notebooks/census/Zimbabwe Raw Data Full Simulated School Mining Manufacturing.ipynb).
 
-The preprocessing notebooks needed to generate inputs using the mobility data can be found in `notebooks/mobility`.
+The preprocessing notebooks needed to generate inputs using the mobility data can be found in [`notebooks/mobility`](notebooks/mobility).
 
-Processing of the risk component to the model can be found in `notebooks/risk/Process hand washing and severe disease risk.ipynb`.
+Processing of the risk component to the model can be found in [`notebooks/risk/Process hand washing and severe disease risk.ipynb`](notebooks/risk/Process hand washing and severe disease risk.ipynb).
 
-Additional parameters are contained in `src/covid19_abm/params.py`.
+Additional parameters are contained in [`src/covid19_abm/params.py`](src/covid19_abm/params.py).
 
 ## Running the model
 
-1. The core model implementation can be found in `src/covid19_abm/base_model.py`.
+1. The core model implementation can be found in [`src/covid19_abm/base_model.py`](src/covid19_abm/base_model.py).
 
-2. A script in `scripts/run_simulation_scenarios_full_data.py` can be configured to identify which scenarios will be simulated and basic parameters such as `R0` can be defined.
+2. A script in [`scripts/run_simulation_scenarios_full_data.py`](scripts/run_simulation_scenarios_full_data.py) can be configured to identify which scenarios will be simulated and basic parameters such as `R0` can be defined.
 
-3. Specification of scenarios are defined in `src/covid19_abm/scenario_models.py`
+3. Specification of scenarios are defined in [`src/covid19_abm/scenario_models.py`](src/covid19_abm/scenario_models.py)
 
 ## Notice
 
