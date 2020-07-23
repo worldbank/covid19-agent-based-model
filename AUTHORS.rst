@@ -2,4 +2,4 @@
 Contributors
 ============
 
-* Aivin V. Solatorio <avsolatorio@gmail.com>
+* Aivin V. Solatorio <avsolatorio@gmail.com> <asolatorio@worldbank.org>
