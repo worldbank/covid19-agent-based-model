@@ -18,7 +18,7 @@ Since the agents in the model possess economic activity information, this allows
 
 To improve the speed of the model to simulate millions of agents, a **time-to-next-event strategy** and a **vectorized implementation** was done.
 
-One of the model's limitations is that the interaction of agents are defined at the district level because we don't have data of actual workplaces. This can be easily extended when the data is available by setting the `economic_activity_location_id` attribute below to the actual workplace id instead of the district id.
+One of the model's limitations is that the interaction of agents is defined at the district level because we don't have data of actual workplaces. This can be easily extended when the data is available by setting the `economic_activity_location_id` attribute below to the actual workplace id instead of the district id.
 
 Also note that the economic activity interaction matrix is defined based on informed estimates but still is not based on empirical data. Additional improvement could be a survey of interaction of population that also asks for the economic activity of respondents to accurately inform the model.
 
