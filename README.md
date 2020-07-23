@@ -18,6 +18,10 @@ Since the agents in the model possess economic activity information, this allows
 
 To improve the speed of the model to simulate millions of agents, a **time-to-next-event strategy** and a **vectorized implementation** was done.
 
+One of the model's limitations is that the interaction of agents are defined at the district level because we don't have data of actual workplaces. This can be easily extended when the data is available by setting the `economic_activity_location_id` attribute below to the actual workplace id instead of the district id.
+
+Also note that the economic activity interaction matrix is defined based on informed estimates but still is not based on empirical data. Additional improvement could be a survey of interaction of population that also asks for the economic activity of respondents to accurately inform the model.
+
 ## Sample output
 
 The following visualizations are generated from the output of the model. Shown below is a graph of the disease case trajectories for various scenarios. Also shown are example spatiotemporal propagation of the outbreak for both unmitigated and a lockdown scenario.
@@ -60,11 +64,11 @@ The model uses the following data to model various scenarios:
 
 Most of the input data come from raw data sources. Notebooks used to process the raw data into formats accepted by the model are found in the `notebooks` directory.
 
-The preprocessing notebook needed to generate the input for the agents data is found in [`notebooks/census/Zimbabwe Raw Data Full Simulated School Mining Manufacturing.ipynb`](notebooks/census/Zimbabwe Raw Data Full Simulated School Mining Manufacturing.ipynb).
+The preprocessing notebook needed to generate the input for the agents data is found in [`notebooks/census/Zimbabwe Raw Data Full Simulated School Mining Manufacturing.ipynb`](notebooks/census/Zimbabwe%20Raw%20Data%20Full%20Simulated%20School%20Mining%20Manufacturing.ipynb).
 
 The preprocessing notebooks needed to generate inputs using the mobility data can be found in [`notebooks/mobility`](notebooks/mobility).
 
-Processing of the risk component to the model can be found in [`notebooks/risk/Process hand washing and severe disease risk.ipynb`](notebooks/risk/Process hand washing and severe disease risk.ipynb).
+Processing of the risk component to the model can be found in [`notebooks/risk/Process hand washing and severe disease risk.ipynb`](notebooks/risk/Process%20hand%20washing%20and%20severe%20disease%20risk.ipynb).
 
 Additional parameters are contained in [`src/covid19_abm/params.py`](src/covid19_abm/params.py).
 
