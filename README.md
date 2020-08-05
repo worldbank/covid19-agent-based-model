@@ -85,3 +85,16 @@ Additional parameters are contained in [`src/covid19_abm/params.py`](src/covid19
 This repository may contain some codes and/or notebooks that may break since this was migrated from a different workspace. Kindly report any problems using Github's issues or e-mail me at asolatorio@worldbank.org or avsolatorio@gmail.com.
 
 Any errors found in the model implementation and/or logic are highly encouraged to be reported using the same channel.
+
+## Citation
+
+For work or publication derived from this model, kindly cite this repository in your publication using the following details.
+
+@misc{Solatorio2020,
+	author = {Solatorio, Aivin},
+	title = {Agent-based Model (ABM) for CoVid19},
+	year = {2020},
+	publisher = {GitHub},
+	journal = {GitHub Repository},
+	howpublished = {\url{https://github.com/worldbank/covid19-agent-based-model}},
+}
