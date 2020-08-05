@@ -90,11 +90,11 @@ Any errors found in the model implementation and/or logic are highly encouraged 
 
 For work or publication derived from this model, kindly cite this repository in your publication using the following details.
 
-@misc{Solatorio2020,
-	author = {Solatorio, Aivin},
-	title = {Agent-based Model (ABM) for CoVid19},
-	year = {2020},
-	publisher = {GitHub},
-	journal = {GitHub Repository},
-	howpublished = {\url{https://github.com/worldbank/covid19-agent-based-model}},
-}
+      @misc{Solatorio2020,
+         author = {Solatorio, Aivin},
+         title = {Agent-based Model (ABM) for CoVid19},
+         year = {2020},
+         publisher = {GitHub},
+         journal = {GitHub Repository},
+         howpublished = {\url{https://github.com/worldbank/covid19-agent-based-model}},
+      }
