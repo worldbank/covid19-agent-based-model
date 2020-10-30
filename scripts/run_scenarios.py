@@ -21,13 +21,16 @@ scenarios = {
     'OpenManufacturingScenario': sm.OpenManufacturingScenario,
     'EasedLockdownScenario': sm.EasedLockdownScenario,
     'EasedOpenSchoolsScenario': sm.EasedOpenSchoolsScenario,
+    'Phase1GovernmentOpenSchoolsScenario': sm.Phase1GovernmentOpenSchoolsScenario,
+    'DynamicPhase1GovernmentOpenSchoolsScenario': sm.DynamicPhase1GovernmentOpenSchoolsScenario,
+    'AcceleratedGovernmentOpenSchoolsScenario': sm.AcceleratedGovernmentOpenSchoolsScenario,
 }
 
 # R0 = 1.9
 # sample_size = 10
 # seed_num = 90
 timestep = timedelta(hours=4)
-start_date = datetime(2020, 6, 25)
+start_date = datetime(2020, 9, 1)
 
 
 if __name__ == '__main__':
