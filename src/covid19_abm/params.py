@@ -15,6 +15,7 @@ class ParamsConfig:
         'In School': 1.0,
         'Homemakers/Housework': 0.8,
         'Office workers': 1.0,
+        'Teachers': 1.0,
         'Service Workers': 1.0,
         'Agriculture Workers': 1.0,
         'Indusrtry Workers': 1.0,
@@ -28,12 +29,25 @@ class ParamsConfig:
         'In School': 0.8,
         'Homemakers/Housework': 0.8,
         'Office workers': 0.8,
+        'Teachers': 0.8,
         'Service Workers': 0.8,
         'Agriculture Workers': 0.8,
         'Indusrtry Workers': 0.8,
         'In the army': 0.8,
         'Disabled and not working': 0.0
     }
+
+    # Susceptibility by age
+    susceptibility_by_age = pd.Series({
+        9: 0.4,
+        19: 0.38,
+        29: 0.79,
+        39: 0.86,
+        49: 0.8,
+        59: 0.82,
+        69: 0.88,
+        np.inf: 0.74,
+    })
 
     # Hospitalization rates by age
     # https://mrc-ide.github.io/global-lmic-reports/parameters.html
@@ -177,16 +191,18 @@ class ParamsConfig:
     # Probability that a person with mild symptom will still go out of the household.
     MILD_SYMPTOM_MOVEMENT_PROBABILITY = 1.0
 
-    # Map of ward to hospital ids
-    WARD_HOSPITALS = {}
+    # Map of district to hospital ids
+    DISTRICT_HOSPITALS = {}
 
-    WARD_MOVEMENT_ALLOWED_AGE = 18
+    DISTRICT_MOVEMENT_ALLOWED_AGE = 18
 
     def __init__(
         self, district='old', data_sample_size=5, R0=None,
-        interaction_matrix_file='final_close_interaction_matrix.xlsx',
+        normal_interaction_matrix_file='final_close_interaction_matrix_normal.xlsx',
+        lockdown_interaction_matrix_file='final_close_interaction_matrix_lockdown.xlsx',
         stay_duration_file='weekday_mobility_duration_count_df.pickle',
         transition_probability_file='daily_region_transition_probability.csv',
+        intra_district_decreased_mobility_rates_file='intra_district_decreased_mobility_rates.csv',
         timestep=None,
     ):
         if R0 is not None:
@@ -208,6 +224,8 @@ class ParamsConfig:
         self.AGE_CRITICAL_CARE_PROBABILITY = {age: self.critical_rates_by_age.iloc[(self.critical_rates_by_age.index >= age).argmax()] for age in self.ages}
         self.AGE_HOSPITALIZATION_FATALITY_PROBABILITY = {age: self.hospitalized_death_rates_by_age.iloc[(self.hospitalized_death_rates_by_age.index >= age).argmax()] for age in self.ages}
 
+        self.AGE_SUSCEPTIBILITY_PROBABILITY = {age: self.susceptibility_by_age.iloc[(self.susceptibility_by_age.index >= age).argmax()] for age in self.ages}
+
         # Derived value of infection rate per time step for symptomatic and asymptomatic during the contagious period
         # Formula from: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0208775 (Equation 1)
         self.ASYMPTOMATIC_INFECTION_RATE = self.R0 / ((timedelta(days=self.ASYMPTOMATIC_CONTAGIOUS_PERIOD_MEAN) / self.step_timedelta) * self.INTERACTION_SIZE_MEAN)
@@ -223,38 +241,43 @@ class ParamsConfig:
             age: self.R0 / ((timedelta(days=self.SYMPTOMATIC_CONTAGIOUS_PERIOD_MEAN) / self.step_timedelta) * self.per_capita_contact_rates.iloc[(self.per_capita_contact_rates.index >= age).argmax()]) for age in self.ages})
         self.AGE_SYMPTOMATIC_INFECTION_RATE_VALUES = self.AGE_SYMPTOMATIC_INFECTION_RATE[sorted(self.ages)].values
 
-        self.set_interaction_parameters(interaction_matrix_file)
-
-        self.WARD_MOVING_ECONOMIC_STATUS = set([i for i, j in self.ECONOMIC_STATUS_WEEKDAY_MOVEMENT_PROBABILITY.items() if j > 0])
-        self.WARD_MOVING_ECONOMIC_STATUS.remove('In School')
+        self.DISTRICT_MOVING_ECONOMIC_STATUS = set([i for i, j in self.ECONOMIC_STATUS_WEEKDAY_MOVEMENT_PROBABILITY.items() if j > 0])
+        self.DISTRICT_MOVING_ECONOMIC_STATUS.remove('In School')
+        self.DISTRICT_MOVING_ECONOMIC_STATUS.remove('Teachers')
 
         # Values in hours
-        self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX = pd.read_pickle(stay_duration_file)
-        self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX[['avg_duration', 'stddev_duration']] = self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX[['avg_duration', 'stddev_duration']] + 0.001
+        self.DISTRICT_WEEKDAY_OD_STAY_COUNT_MATRIX = pd.read_pickle(stay_duration_file)
+        self.DISTRICT_WEEKDAY_OD_STAY_COUNT_MATRIX[['avg_duration', 'stddev_duration']] = self.DISTRICT_WEEKDAY_OD_STAY_COUNT_MATRIX[['avg_duration', 'stddev_duration']] + 0.001
 
-        self.DAILY_WARD_TRANSITION_PROBABILITY = pd.read_csv(transition_probability_file, index_col=[0, 1])
-        self.DAILY_WARD_TRANSITION_PROBABILITY = self.DAILY_WARD_TRANSITION_PROBABILITY.loc[sorted(self.DAILY_WARD_TRANSITION_PROBABILITY.index)]
+        self.DAILY_DISTRICT_TRANSITION_PROBABILITY = pd.read_csv(transition_probability_file, index_col=[0, 1])
+        self.DAILY_DISTRICT_TRANSITION_PROBABILITY = self.DAILY_DISTRICT_TRANSITION_PROBABILITY.loc[sorted(self.DAILY_DISTRICT_TRANSITION_PROBABILITY.index)]
 
-        self.WARD_IDS = sorted(self.DAILY_WARD_TRANSITION_PROBABILITY.columns)
-        self.WARD_ID_TO_NAME = dict(enumerate(self.WARD_IDS))
-        self.WARD_NAME_TO_ID = {j: i for i, j in self.WARD_ID_TO_NAME.items()}
+        self.DISTRICT_IDS = sorted(self.DAILY_DISTRICT_TRANSITION_PROBABILITY.columns)
+        self.DISTRICT_ID_TO_NAME = dict(enumerate(self.DISTRICT_IDS))
+        self.DISTRICT_NAME_TO_ID = {j: i for i, j in self.DISTRICT_ID_TO_NAME.items()}
 
-        self.DAILY_WARD_TRANSITION_PROBABILITY = self.DAILY_WARD_TRANSITION_PROBABILITY[self.WARD_IDS]
+        self.DAILY_DISTRICT_TRANSITION_PROBABILITY = self.DAILY_DISTRICT_TRANSITION_PROBABILITY[self.DISTRICT_IDS]
 
-        for wid_i in self.WARD_IDS:
-            self.WARD_HOSPITALS[wid_i] = [f'c_{wid_i}_{i}' for i in list(np.random.randint(0, 1000, size=10))]
+        for wid_i in self.DISTRICT_IDS:
+            self.DISTRICT_HOSPITALS[wid_i] = [f'c_{wid_i}_{i}' for i in list(np.random.randint(0, 1000, size=10))]
 
         if self.district_type == 'old':
             self.set_old_district_seed(seed_infected=3)
         elif self.district_type == 'new':
             self.set_new_district_seed(seed_infected=3)
 
+        self.normal_interaction_matrix_file = normal_interaction_matrix_file
+        self.lockdown_interaction_matrix_file = lockdown_interaction_matrix_file
+        self.set_interaction_parameters(self.normal_interaction_matrix_file)
+
         self.blocked = False
         self.lockdown = False
 
+        self.intra_district_decreased_mobility_rates_file = intra_district_decreased_mobility_rates_file
+
     def set_interaction_parameters(self, interaction_matrix_file):
         # This matrix defines the probability of an interaction between two economic status.
-        # This will be multiplied by the population density per ward to quantify the mixing intensity per ward.
+        # This will be multiplied by the population density per district to quantify the mixing intensity per district.
         # ECONOMIC_STATUS_INTERACTION_MATRIX = {'employed': {'unemployed'}}
         self.ECONOMIC_STATUS_INTERACTION_MATRIX = pd.read_excel(
             interaction_matrix_file,
@@ -264,7 +287,7 @@ class ParamsConfig:
             interaction_matrix_file,
             sheet_name='interactions', index_col=0)['interactions']
 
-        # self.WARD_POP_DENSITY = pd.read_csv(os.path.join(data_dir, 'district_pop_dens_friction.csv'))
+        # self.DISTRICT_POP_DENSITY = pd.read_csv(os.path.join(data_dir, 'district_pop_dens_friction.csv'))
 
         self.ECONOMIC_STATUS_INTERACTION_MATRIX_CUMSUM = self.ECONOMIC_STATUS_INTERACTION_MATRIX.cumsum(axis=1)
         self.ECON_STAT_ID_TO_NAME = dict(enumerate(self.ECONOMIC_STATUS_INTERACTION_MATRIX_CUMSUM.columns))
@@ -273,20 +296,35 @@ class ParamsConfig:
         self.ECONOMIC_STATUS_INTERACTION_MATRIX_VALUES = self.ECONOMIC_STATUS_INTERACTION_MATRIX[
             self.ECONOMIC_STATUS_INTERACTION_MATRIX_CUMSUM.columns].values
 
+    def set_intra_district_decreased_mobility_rates(self, intra_district_decreased_mobility_rates_file):
+        self.LOCKDOWN_DECREASED_MOBILITY_RATE = pd.read_csv(
+            get_data_dir('preprocessed', 'mobility', intra_district_decreased_mobility_rates_file),
+            index_col=0
+        )['pctdif_distance']
+
+        self.LOCKDOWN_DECREASED_MOBILITY_RATE = {
+            self.DISTRICT_NAME_TO_ID[i]: j for i, j in self.LOCKDOWN_DECREASED_MOBILITY_RATE.items()
+        }
+
     def set_lockdown_parameters(self, lockdown_mode='lockdown_empirical'):
+        self.set_intra_district_decreased_mobility_rates(
+            self.intra_district_decreased_mobility_rates_file)
+
         if lockdown_mode == 'lockdown_empirical':
             # 33% decrease in inter-district mobility (empirical)
-            self.LOCKDOWN_ALLOWED_PROBABILITY = 0.67
-            self.LOCKDOWN_DECREASED_MOBILITY_RATE = {w: 0.59 for w in self.WARD_ID_TO_NAME}
+            self.LOCKDOWN_ALLOWED_PROBABILITY = {w: 0.67 for w in self.DISTRICT_ID_TO_NAME}
+            # self.LOCKDOWN_DECREASED_MOBILITY_RATE = {w: 0.59 for w in self.DISTRICT_ID_TO_NAME}
         elif lockdown_mode == 'lockdown_assumed':
-            self.LOCKDOWN_ALLOWED_PROBABILITY = 0.05
+            self.LOCKDOWN_ALLOWED_PROBABILITY = {w: 0.05 for w in self.DISTRICT_ID_TO_NAME}
             # 41% decrease in short-range mobility
-            self.LOCKDOWN_DECREASED_MOBILITY_RATE = {w: 0.59 for w in self.WARD_ID_TO_NAME}
+            # self.LOCKDOWN_DECREASED_MOBILITY_RATE = {w: 0.59 for w in self.DISTRICT_ID_TO_NAME}
         elif lockdown_mode == 'lockdown_eased':
-            self.LOCKDOWN_ALLOWED_PROBABILITY = 0.86
-            self.LOCKDOWN_DECREASED_MOBILITY_RATE = {w: 0.838 for w in self.WARD_ID_TO_NAME}
+            self.LOCKDOWN_ALLOWED_PROBABILITY = {w: 0.86 for w in self.DISTRICT_ID_TO_NAME}
+            # self.LOCKDOWN_DECREASED_MOBILITY_RATE = {w: 0.838 for w in self.DISTRICT_ID_TO_NAME}
         else:
             raise ValueError(f'lockdown_mode `{lockdown_mode}` not valid!')
+
+        self.set_interaction_parameters(self.lockdown_interaction_matrix_file)
 
         self.lockdown = True
 
@@ -304,33 +342,33 @@ class ParamsConfig:
 
     def set_old_district_seed(self, seed_infected):
         # NOTE: This should be updated when the admin level is changed.
-        # model.params.WARD_NAME_TO_ID['w_21'] -> 18 Bulawayo
-        # model.params.WARD_NAME_TO_ID['w_921'] -> 85 Harare
-        # model.params.WARD_NAME_TO_ID['w_302'] -> 21 Goromonzi
-        self.SEED_INFECT_WARD_IDS = np.array([18, 85, 21])
+        # model.params.DISTRICT_NAME_TO_ID['d_21'] -> 18 Bulawayo
+        # model.params.DISTRICT_NAME_TO_ID['d_921'] -> 85 Harare
+        # model.params.DISTRICT_NAME_TO_ID['d_302'] -> 21 Goromonzi
+        self.SEED_INFECT_DISTRICT_IDS = np.array([18, 85, 21])
         self.SEED_INFECT_AGE_MIN = 20
         self.SEED_INFECT_NUM = seed_infected  # 3 -> 66 for a 5% sample
         self.SIMULATION_START_DATE = datetime(2020, 6, 28, 8)
 
     def set_new_district_seed(self, seed_infected):
         # NOTE: This should be updated when the admin level is changed.
-        # model.params.WARD_NAME_TO_ID['w_1'] -> 0 Bulawayo
-        # model.params.WARD_NAME_TO_ID['w_2'] -> 11 Harare
-        # model.params.WARD_NAME_TO_ID['w_18'] -> 9 Goromonzi
+        # model.params.DISTRICT_NAME_TO_ID['d_1'] -> 0 Bulawayo
+        # model.params.DISTRICT_NAME_TO_ID['d_2'] -> 11 Harare
+        # model.params.DISTRICT_NAME_TO_ID['d_18'] -> 9 Goromonzi
 
         with open(get_data_dir('preprocessed', 'line_list', 'latest_line_list.pickle'), 'rb') as fl:
             infected_count = pickle.load(fl)
-            self.DISTRICT_ID_INFECTED_COUNT = {self.WARD_NAME_TO_ID.get(i): j for i, j in infected_count.items()}
+            self.DISTRICT_ID_INFECTED_COUNT = {self.DISTRICT_NAME_TO_ID.get(i): j for i, j in infected_count.items()}
             self.DISTRICT_ID_INFECTED_PROB = pd.Series(self.DISTRICT_ID_INFECTED_COUNT)
             self.DISTRICT_ID_INFECTED_PROB = (self.DISTRICT_ID_INFECTED_PROB / self.DISTRICT_ID_INFECTED_PROB.sum()).to_dict()
 
-        self.SEED_INFECT_WARD_IDS =  np.array([i for i in self.DISTRICT_ID_INFECTED_COUNT])
+        self.SEED_INFECT_DISTRICT_IDS =  np.array([i for i in self.DISTRICT_ID_INFECTED_COUNT])
         self.SEED_INFECT_AGE_MIN = 20
         self.SEED_INFECT_AGE_MAX = 60
         self.SEED_INFECT_NUM = seed_infected  # 3 -> 66 for a 5% sample
-        self.SIMULATION_START_DATE = datetime(2020, 6, 28, 8)
+        self.SIMULATION_START_DATE = datetime(2020, 9, 1, 8)
 
-        self.data_file_name = get_data_dir('preprocessed', 'census', f'zimbabwe_ipums_mining_manufacturing_school_new_dist_{self.data_sample_size}pct.pickle')
+        self.data_file_name = get_data_dir('preprocessed', 'census', f'zimbabwe_expanded_census_consolidated_{self.data_sample_size}pct.pickle')
 
     def get_effective_R0(self, hw):
         self.HW_MIN_TO_MEAN_INCREASE = 0.05
@@ -351,7 +389,7 @@ class ParamsConfig:
         self.MEAN_HW_RISK = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].mean()
         self.MIN_HW_RISK = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].min()
 
-        self.DISTRICT_HW_RISK['ID_2'] = self.DISTRICT_HW_RISK['ID_2'].map(lambda x: f'w_{x}')
+        self.DISTRICT_HW_RISK['ID_2'] = self.DISTRICT_HW_RISK['ID_2'].map(lambda x: f'd_{x}')
         self.DISTRICT_HW_RISK['effective_hw_risk'] = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].map(self.get_effective_R0)
         self.DISTRICT_HW_RISK = self.DISTRICT_HW_RISK.set_index('ID_2').to_dict()['effective_hw_risk']
 
@@ -369,7 +407,7 @@ class ParamsConfig:
         self.MEAN_HW_RISK = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].mean()
         self.MIN_HW_RISK = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].min()
 
-        self.DISTRICT_HW_RISK['ID_2'] = self.DISTRICT_HW_RISK['ID_2'].map(lambda x: f'w_{x}')
+        self.DISTRICT_HW_RISK['ID_2'] = self.DISTRICT_HW_RISK['ID_2'].map(lambda x: f'd_{x}')
         self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'] = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].min()
         self.DISTRICT_HW_RISK['effective_hw_risk'] = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].map(self.get_effective_R0)
         self.DISTRICT_HW_RISK = self.DISTRICT_HW_RISK.set_index('ID_2').to_dict()['effective_hw_risk']
@@ -388,7 +426,7 @@ class ParamsConfig:
         self.MEAN_HW_RISK = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].mean()
         self.MIN_HW_RISK = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].min()
 
-        self.DISTRICT_HW_RISK['ID_2'] = self.DISTRICT_HW_RISK['ID_2'].map(lambda x: f'w_{x}')
+        self.DISTRICT_HW_RISK['ID_2'] = self.DISTRICT_HW_RISK['ID_2'].map(lambda x: f'd_{x}')
         self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'] = 0
         self.DISTRICT_HW_RISK['effective_hw_risk'] = self.DISTRICT_HW_RISK['mean_hw_risk_pop_weighted'].map(self.get_effective_R0)
         self.DISTRICT_HW_RISK = self.DISTRICT_HW_RISK.set_index('ID_2').to_dict()['effective_hw_risk']
@@ -402,57 +440,57 @@ class ParamsConfig:
     def scenario_block_greatest_inbound_movement(self):
         # Districts with the greatest number of inbound movements
         self.SCENARIO = 'BLOCK_GREATEST_INBOUND'
-        self.BLOCK_WARDS = ['w_901', 'w_921', 'w_922', 'w_302', 'w_406']
-        self.BLOCK_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.BLOCK_WARDS))
+        self.BLOCK_DISTRICTS = ['d_901', 'd_921', 'd_922', 'd_302', 'd_406']
+        self.BLOCK_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.BLOCK_DISTRICTS))
         self.set_blocked_parameters()
 
     def scenario_block_greatest_outbound_movement(self):
         # Districts with the greatest number of outbound movements
         self.SCENARIO = 'BLOCK_GREATEST_OUTBOUND'
-        self.BLOCK_WARDS = ['w_901', 'w_922', 'w_304', 'w_21', 'w_302']
-        self.BLOCK_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.BLOCK_WARDS))
+        self.BLOCK_DISTRICTS = ['d_901', 'd_922', 'd_304', 'd_21', 'd_302']
+        self.BLOCK_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.BLOCK_DISTRICTS))
         self.set_blocked_parameters()
 
     def scenario_block_greatest_movement(self):
         # Districts with the greatest number of outbound movements
         self.SCENARIO = 'BLOCK_GREATEST'
-        self.BLOCK_WARDS = ['w_901', 'w_921', 'w_922', 'w_302', 'w_406', 'w_304', 'w_21',]
-        self.BLOCK_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.BLOCK_WARDS))
+        self.BLOCK_DISTRICTS = ['d_901', 'd_921', 'd_922', 'd_302', 'd_406', 'd_304', 'd_21',]
+        self.BLOCK_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.BLOCK_DISTRICTS))
         self.set_blocked_parameters()
 
     def scenario_block_new_district_greatest_movement(self):
         # Districts with the greatest number of outbound movements
         self.SCENARIO = 'BLOCK_GREATEST_NEW_DIST'
-        self.BLOCK_WARDS = ['w_2', 'w_31', 'w_18', 'w_1', 'w_36', 'w_7', 'w_26', 'w_23', 'w_28', 'w_56']
-        self.BLOCK_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.BLOCK_WARDS))
+        self.BLOCK_DISTRICTS = ['d_2', 'd_31', 'd_18', 'd_1', 'd_36', 'd_7', 'd_26', 'd_23', 'd_28', 'd_56']
+        self.BLOCK_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.BLOCK_DISTRICTS))
         self.set_blocked_parameters()
 
     def scenario_lockdown_greatest_inbound_movement(self):
         # Districts with the greatest number of inbound movements
         self.SCENARIO = 'LOCKDOWN_GREATEST_INBOUND'
-        self.LOCKDOWN_WARDS = ['w_901', 'w_921', 'w_922', 'w_302', 'w_406']
-        self.LOCKDOWN_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.LOCKDOWN_WARDS))
+        self.LOCKDOWN_DISTRICTS = ['d_901', 'd_921', 'd_922', 'd_302', 'd_406']
+        self.LOCKDOWN_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.LOCKDOWN_DISTRICTS))
         self.set_lockdown_parameters()
 
     def scenario_lockdown_greatest_outbound_movement(self):
         # Districts with the greatest number of outbound movements
         self.SCENARIO = 'LOCKDOWN_GREATEST_OUTBOUND'
-        self.LOCKDOWN_WARDS = ['w_901', 'w_922', 'w_304', 'w_21', 'w_302']
-        self.LOCKDOWN_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.LOCKDOWN_WARDS))
+        self.LOCKDOWN_DISTRICTS = ['d_901', 'd_922', 'd_304', 'd_21', 'd_302']
+        self.LOCKDOWN_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.LOCKDOWN_DISTRICTS))
         self.set_lockdown_parameters()
 
     def scenario_lockdown_greatest_movement(self):
         # Districts with the greatest number of outbound movements
         self.SCENARIO = 'LOCKDOWN_GREATEST'
-        self.LOCKDOWN_WARDS = ['w_901', 'w_921', 'w_922', 'w_302', 'w_406', 'w_304', 'w_21',]
-        self.LOCKDOWN_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.LOCKDOWN_WARDS))
+        self.LOCKDOWN_DISTRICTS = ['d_901', 'd_921', 'd_922', 'd_302', 'd_406', 'd_304', 'd_21',]
+        self.LOCKDOWN_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.LOCKDOWN_DISTRICTS))
         self.set_lockdown_parameters()
 
     def scenario_lockdown_new_district_greatest_movement(self):
         # Districts with the greatest number of outbound movements
         self.SCENARIO = 'LOCKDOWN_GREATEST_NEW_DIST'
-        self.LOCKDOWN_WARDS = ['w_2', 'w_31', 'w_18', 'w_1', 'w_36', 'w_7', 'w_26', 'w_23', 'w_28', 'w_56']
-        self.LOCKDOWN_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.LOCKDOWN_WARDS))
+        self.LOCKDOWN_DISTRICTS = ['d_2', 'd_31', 'd_18', 'd_1', 'd_36', 'd_7', 'd_26', 'd_23', 'd_28', 'd_56']
+        self.LOCKDOWN_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.LOCKDOWN_DISTRICTS))
         self.set_lockdown_parameters()
 
     def scenario_block_greatest_reach_movement(self):
@@ -473,7 +511,7 @@ class ParamsConfig:
         # Isolating vulnerable age groups
         self.SCENARIO = 'ISOLATE_VULNERABLE'
         self.VULNERABLE_AGE = 60
-        self.VULNERABLE_LOCATION = -1 * (max(self.WARD_ID_TO_NAME) + 1)
+        self.VULNERABLE_LOCATION = -1 * (max(self.DISTRICT_ID_TO_NAME) + 1)
 
     def scenario_isolate_vulnerable_groups_in_house(self):
         # Isolating vulnerable age groups
@@ -487,8 +525,8 @@ class ParamsConfig:
 
     def scenario_continued_all_lockdown(self):
         self.SCENARIO = 'CONTINUED_ALL_LOCKDOWN'
-        self.LOCKDOWN_WARDS = list(self.WARD_NAME_TO_ID.keys())
-        self.LOCKDOWN_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.LOCKDOWN_WARDS))
+        self.LOCKDOWN_DISTRICTS = list(self.DISTRICT_NAME_TO_ID.keys())
+        self.LOCKDOWN_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.LOCKDOWN_DISTRICTS))
         self.set_lockdown_parameters()
 
     def scenario_continued_all_lockdown_open_mining(self):
@@ -515,13 +553,25 @@ class ParamsConfig:
 
     def scenario_eased_all_lockdown(self):
         self.SCENARIO = 'EASED_ALL_LOCKDOWN'
-        self.LOCKDOWN_WARDS = list(self.WARD_NAME_TO_ID.keys())
-        self.LOCKDOWN_WARDS_IDS = list(map(self.WARD_NAME_TO_ID.get, self.LOCKDOWN_WARDS))
+        self.LOCKDOWN_DISTRICTS = list(self.DISTRICT_NAME_TO_ID.keys())
+        self.LOCKDOWN_DISTRICTS_IDS = list(map(self.DISTRICT_NAME_TO_ID.get, self.LOCKDOWN_DISTRICTS))
         self.set_lockdown_parameters(lockdown_mode='lockdown_eased')
 
     def scenario_eased_all_lockdown_open_schools(self):
         self.scenario_eased_all_lockdown()
         self.SCENARIO = 'EASED_ALL_LOCKDOWN_SCHOOLS'
+
+    def scenario_phase1_government_open_schools(self):
+        self.scenario_eased_all_lockdown()
+        self.SCENARIO = "PHASE1_GOVERNMENT_OPEN_SCHOOLS"
+
+    def scenario_dynamic_phase1_government_open_schools(self):
+        self.scenario_eased_all_lockdown()
+        self.SCENARIO = "DYNAMIC_PHASE1_GOVERNMENT_OPEN_SCHOOLS"
+
+    def scenario_accelerated_government_open_schools(self):
+        self.scenario_eased_all_lockdown()
+        self.SCENARIO = "ACCELERATED_GOVERNMENT_OPEN_SCHOOLS"
 
     def get_gamma_shape_scale(self, mean, std):
         shape = mean ** 2 / std
@@ -529,10 +579,10 @@ class ParamsConfig:
 
         return shape, scale
 
-    def get_ward_movement_stay_period(self, weekday, src, dst):
+    def get_district_movement_stay_period(self, weekday, src, dst):
         try:
-            mean = self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'avg_duration']
-            std = self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'stddev_duration']
+            mean = self.DISTRICT_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'avg_duration']
+            std = self.DISTRICT_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'stddev_duration']
 
             shape, scale = self.get_gamma_shape_scale(mean, std)
 
@@ -542,13 +592,13 @@ class ParamsConfig:
 
         return period
 
-    def get_ward_movement_stay_parameters(self, weekday, src, dst):
+    def get_district_movement_stay_parameters(self, weekday, src, dst):
         shape = 24
         scale = 0.01
 
         try:
-            mean = self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'avg_duration']
-            std = self.WARD_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'stddev_duration']
+            mean = self.DISTRICT_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'avg_duration']
+            std = self.DISTRICT_WEEKDAY_OD_STAY_COUNT_MATRIX.at[(weekday, src, dst), 'stddev_duration']
 
             shape, scale = self.get_gamma_shape_scale(mean, std)
         except KeyError:

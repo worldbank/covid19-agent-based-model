@@ -101,10 +101,10 @@ class EpidemicScheduler(BaseScheduler):
         self.model.location_persons_map.setdefault(person.current_location_id, set()).add(person.person_id)
         self.model.all_living_person_ids.add(person.person_id)
 
-        if person.ward_mover:
-            self.model.ward_movement_persons_map.setdefault(person.current_ward_id, set()).add(person.person_id)
+        if person.district_mover:
+            self.model.district_movement_persons_map.setdefault(person.current_district_id, set()).add(person.person_id)
 
-        self.model.add_remove_ward_economic_status_person(person, action='add')
+        self.model.add_remove_district_economic_status_person(person, action='add')
         self.model.household_persons.setdefault(person.household_id, set()).add(person.person_id)
 
 
@@ -116,7 +116,7 @@ class Person(Agent):
         self.model = model
 
         self.person_id = person_params['person_id']  #
-        self.ward_id = person_params['ward_id']  #
+        self.district_id = person_params['district_id']  #
         self.household_id = person_params['household_id']  #
         # self.grid_id = person_params['grid_id']  # This is the grid location of the household if available
         # self.household_type = person_params['household_type']  # This is the household structure, e.g., family of 4 with 2 children, etc.
@@ -127,8 +127,8 @@ class Person(Agent):
         self.economic_status = person_params['economic_status']  # Enum of `student`, `employed`, `unemployed`, `looking for job`, `stay-at-home`, `sick/disabled`, `retired`
         self.economic_activity_location_id = person_params['economic_activity_location_id']  # Location id of school, workplace, household, or -1 (this means can randomly go to community places)
 
-        self.left_ward_at = None
-        self.return_ward_at = None
+        self.left_district_at = None
+        self.return_district_at = None
 
         # Epidemic status
         self.is_infected = None
@@ -153,20 +153,20 @@ class Person(Agent):
         self.is_dead = None
         self.date_died = None
 
-        self.infected_at_ward_id = None
+        self.infected_at_district_id = None
         self.infected_at_location_id = None
 
         # Set initial location as the household
         # Current location can be [school, household, outside]  # Since we don't have specific location data yet.
-        # Let us encode outside as the negative of ward_id to inform `location_persons_map` that people there are still in the same ward.
+        # Let us encode outside as the negative of district_id to inform `location_persons_map` that people there are still in the same district.
         self.current_location_id = self.household_id
-        self.current_ward_id = self.ward_id
+        self.current_district_id = self.district_id
 
-        self.ward_mover = False
+        self.district_mover = False
 
-        if (self.economic_status in self.model.params.WARD_MOVING_ECONOMIC_STATUS) and (self.age >= self.model.params.WARD_MOVEMENT_ALLOWED_AGE):
-            # Only economically active individuals and individuals at least 18 years old are allowed to move between wards.
-            self.ward_mover = True
+        if (self.economic_status in self.model.params.DISTRICT_MOVING_ECONOMIC_STATUS) and (self.age >= self.model.params.DISTRICT_MOVEMENT_ALLOWED_AGE):
+            # Only economically active individuals and individuals at least 18 years old are allowed to move between districts.
+            self.district_mover = True
 
         # Note that teachers can be in a school, which means that location id for workplace should be similar to school id
 
@@ -205,14 +205,14 @@ class Person(Agent):
         params = self.model.params
 
         if action == 'go_home':
-            if self.return_ward_at is None:
+            if self.return_district_at is None:
                 self.update_location(self.household_id)
             else:
-                self.check_return_ward(location_id=self.household_id)
+                self.check_return_district(location_id=self.household_id)
         elif action == 'leave_home':
             if np.random.random() < params.ECONOMIC_STATUS_WEEKDAY_MOVEMENT_PROBABILITY[self.economic_status]:
-                self.move_to_ward()
-                if self.return_ward_at is None:
+                self.move_to_district()
+                if self.return_district_at is None:
                     self.update_location(self.economic_activity_location_id)
         else:
             raise ValueError(f"Action `{action}` not valid!")
@@ -220,15 +220,15 @@ class Person(Agent):
     def other_day_move(self, action):
         params = self.model.params
         if action == 'go_home':
-            if self.return_ward_at is None:
+            if self.return_district_at is None:
                 self.update_location(self.household_id)
             else:
-                self.check_return_ward(location_id=self.household_id)
+                self.check_return_district(location_id=self.household_id)
         elif action == 'leave_home':
             if np.random.random() < params.ECONOMIC_STATUS_OTHER_DAY_MOVEMENT_PROBABILITY[self.economic_status]:
-                self.move_to_ward()
-                if self.return_ward_at is None:
-                    self.update_location(self.ward_id)
+                self.move_to_district()
+                if self.return_district_at is None:
+                    self.update_location(self.district_id)
         else:
             raise ValueError(f"Action `{action}` not valid!")
 
@@ -237,17 +237,17 @@ class Person(Agent):
 
         # Movement for stay-at-home or unemployed individuals.
         if action == 'go_home':
-            if self.return_ward_at is None:
+            if self.return_district_at is None:
                 self.update_location(self.household_id)
             else:
-                self.check_return_ward(location_id=self.household_id)
+                self.check_return_district(location_id=self.household_id)
         elif action == 'leave_home':
             if np.random.random() < params.ECONOMIC_STATUS_WEEKDAY_MOVEMENT_PROBABILITY[self.economic_status]:
                 if np.random.random() < params.MILD_SYMPTOM_MOVEMENT_PROBABILITY:
                     # Allow people that have mild symptoms to go out of the house with some probability.
                     # This results to intermittent economic activity of a person (absences).
-                    self.move_to_ward()
-                    if self.return_ward_at is None:
+                    self.move_to_district()
+                    if self.return_district_at is None:
                         self.update_location(self.economic_activity_location_id)
         else:
             raise ValueError(f"Action `{action}` not valid!")
@@ -255,21 +255,21 @@ class Person(Agent):
     def other_day_mild_symptom_move(self, action):
         params = self.model.params
         if action == 'go_home':
-            if self.return_ward_at is None:
+            if self.return_district_at is None:
                 self.update_location(self.household_id)
             else:
-                self.check_return_ward(location_id=self.household_id)
+                self.check_return_district(location_id=self.household_id)
         elif action == 'leave_home':
             if np.random.random() < params.ECONOMIC_STATUS_OTHER_DAY_MOVEMENT_PROBABILITY[self.economic_status]:
                 if np.random.random() < params.MILD_SYMPTOM_MOVEMENT_PROBABILITY:
-                    self.move_to_ward()
-                    if self.return_ward_at is None:
-                        self.update_location(self.current_ward_id)
+                    self.move_to_district()
+                    if self.return_district_at is None:
+                        self.update_location(self.current_district_id)
         else:
             raise ValueError(f"Action `{action}` not valid!")
 
-    def other_ward_move(self):
-        # For now, only economically active persons will be allowed to move to other wards.
+    def other_district_move(self):
+        # For now, only economically active persons will be allowed to move to other districts.
         pass
 
     def move_to_hospital(self):
@@ -282,38 +282,38 @@ class Person(Agent):
         self.update_location(None)
 
     def move_hospitalized_recovered(self):
-        if self.ward_id != self.current_ward_id:
-            self.update_ward_details(self.ward_id, direction='return', location_id=self.household_id)
+        if self.district_id != self.current_district_id:
+            self.update_district_details(self.district_id, direction='return', location_id=self.household_id)
         else:
             self.update_location(self.household_id)
 
-    def check_return_ward(self, location_id=None):
-        if self.ward_id != self.current_ward_id:
-            # The person is already in a different ward.
-            if self.model.scheduler.real_time > self.return_ward_at:
-                self.update_ward_details(self.ward_id, direction='return', location_id=location_id)
+    def check_return_district(self, location_id=None):
+        if self.district_id != self.current_district_id:
+            # The person is already in a different district.
+            if self.model.scheduler.real_time > self.return_district_at:
+                self.update_district_details(self.district_id, direction='return', location_id=location_id)
             return True
         return False
 
-    def move_to_ward(self):
-        if not self.ward_mover:
-            # Make sure that only those who are allowed to move between wards are processed.
+    def move_to_district(self):
+        if not self.district_mover:
+            # Make sure that only those who are allowed to move between districts are processed.
             return
 
         current_time = self.model.scheduler.real_time
         params = self.model.params
 
-        if self.check_return_ward():
+        if self.check_return_district():
             return
 
-        ward_probs = params.DAILY_WARD_TRANSITION_PROBABILITY[(current_time.weekday(), self.ward_id)]
-        ward_move_ind = (np.random.random() < ward_probs).argmax()
-        ward_id = params.WARD_ID_TO_NAME[ward_move_ind]
+        district_probs = params.DAILY_DISTRICT_TRANSITION_PROBABILITY[(current_time.weekday(), self.district_id)]
+        district_move_ind = (np.random.random() < district_probs).argmax()
+        district_id = params.DISTRICT_ID_TO_NAME[district_move_ind]
 
-        if ward_id == self.ward_id:
+        if district_id == self.district_id:
             return
 
-        self.update_ward_details(ward_id, direction='leave')
+        self.update_district_details(district_id, direction='leave')
 
     def update_location(self, new_location_id):
         if new_location_id != self.current_location_id:
@@ -321,32 +321,32 @@ class Person(Agent):
             self.current_location_id = new_location_id
             self.model.location_persons_map.setdefault(self.current_location_id, set()).add(self.person_id)
 
-    def update_ward_details(self, ward_id, direction, location_id=None):
+    def update_district_details(self, district_id, direction, location_id=None):
 
-        self.model.ward_movement_persons_map[self.current_ward_id].remove(self.person_id)
-        self.model.add_remove_ward_economic_status_person(self, action='remove')
+        self.model.district_movement_persons_map[self.current_district_id].remove(self.person_id)
+        self.model.add_remove_district_economic_status_person(self, action='remove')
 
         if direction == 'leave':
             current_time = self.model.scheduler.real_time
 
-            stay_period = self.model.params.get_ward_movement_stay_period(
+            stay_period = self.model.params.get_district_movement_stay_period(
                 current_time.weekday(),
-                self.current_ward_id, ward_id)
+                self.current_district_id, district_id)
 
-            self.left_ward_at = current_time
-            self.return_ward_at = current_time + stay_period
+            self.left_district_at = current_time
+            self.return_district_at = current_time + stay_period
         elif direction == 'return':
-            self.left_ward_at = None
-            self.return_ward_at = None
+            self.left_district_at = None
+            self.return_district_at = None
         else:
             raise ValueError(f'Direction `{direction}` not valid!')
 
-        self.current_ward_id = ward_id
+        self.current_district_id = district_id
 
-        self.model.ward_movement_persons_map.setdefault(self.current_ward_id, set()).add(self.person_id)
-        self.model.add_remove_ward_economic_status_person(self, action='add')
+        self.model.district_movement_persons_map.setdefault(self.current_district_id, set()).add(self.person_id)
+        self.model.add_remove_district_economic_status_person(self, action='add')
 
-        self.update_location(location_id or ward_id)
+        self.update_location(location_id or district_id)
 
     def step(self):
         current_time = self.model.scheduler.real_time
@@ -375,7 +375,7 @@ class Person(Agent):
 
     def set_epidemic_status(self, current_time):
         self.model.infected_count += 1
-        self.model.ward_infected_persons.setdefault(self.current_ward_id, set()).add(self)
+        self.model.district_infected_persons.setdefault(self.current_district_id, set()).add(self)
 
         self.is_infected = True
         self.is_symptomatic = False
@@ -384,7 +384,7 @@ class Person(Agent):
         self.is_recovered = False
         self.is_dead = False
 
-        self.infected_at_ward_id = self.current_ward_id
+        self.infected_at_district_id = self.current_district_id
         self.infected_at_location_id = self.current_location_id
 
         self.date_infected = current_time
@@ -478,14 +478,14 @@ class Country(Model):
         self.step_timedelta = params.step_timedelta
         self.exposed_persons = {}
         self.contagious_persons = {}
-        self.ward_movement_persons_map = {}
+        self.district_movement_persons_map = {}
         self.school_ids = set()
         self.location_persons_map = {}  # location_id -> set([agent_ids])
         self.persons = {}
         self.hospital_ids = set()
-        self.ward_economic_status_persons = {}
+        self.district_economic_status_persons = {}
         self.household_persons = {}
-        self.ward_infected_persons = {}
+        self.district_infected_persons = {}
         self.not_recovered_or_dead = set()
         self.dead_person_ids = set()
         self.all_living_person_ids = set()
@@ -499,12 +499,12 @@ class Country(Model):
         self.died_count = 0
         self.recovered_count = 0
 
-        for ward_id in self.params.WARD_IDS:
+        for district_id in self.params.DISTRICT_IDS:
             for econ_stat in self.params.ECON_STAT_NAME_TO_ID:
-                if ward_id not in self.ward_economic_status_persons:
-                    self.ward_economic_status_persons[ward_id] = {}
+                if district_id not in self.district_economic_status_persons:
+                    self.district_economic_status_persons[district_id] = {}
 
-                self.ward_economic_status_persons[ward_id][econ_stat] = set()
+                self.district_economic_status_persons[district_id][econ_stat] = set()
 
         self.scheduler = EpidemicScheduler(self)
 
@@ -540,12 +540,12 @@ class Country(Model):
     def get_neighbors(self, person):
         '''
         Things to consider.
-        People living in the same ward.
+        People living in the same district.
 
-        People travelling to a different ward than their household.
+        People travelling to a different district than their household.
         '''
 
-        if person.current_location_id and (person.current_location_id.startswith('w_') or person.current_location_id.startswith('s_')):
+        if person.current_location_id and (person.current_location_id.startswith('d_') or person.current_location_id.startswith('s_')):
             # The person is outside the household.
             # Use economic status-based interaction to get the individuals that are likely the person will interact with.
             num_interactions = self.params.ECONOMIC_STATUS_INTERACTION_SIZE_MAP[person.economic_status]
@@ -560,7 +560,7 @@ class Country(Model):
             neighbors = []
 
             for es, count in interaction_economic_status.items():
-                candidates = list(self.ward_economic_status_persons[person.current_ward_id][es])
+                candidates = list(self.district_economic_status_persons[person.current_district_id][es])
                 size = min(count, len(candidates))
                 np.random.shuffle(candidates)
 
@@ -595,30 +595,30 @@ class Country(Model):
             if (person.date_recovered or person.date_died) > self.scheduler.real_time:
                 self.contagious_persons[person.person_id] = person
 
-    def add_remove_ward_economic_status_person(self, person, action):
-        # if person.current_ward_id not in self.ward_economic_status_persons:
-        #     self.ward_economic_status_persons[person.current_ward_id] = {}
+    def add_remove_district_economic_status_person(self, person, action):
+        # if person.current_district_id not in self.district_economic_status_persons:
+        #     self.district_economic_status_persons[person.current_district_id] = {}
 
-        # if person.economic_status not in self.ward_economic_status_persons[person.current_ward_id]:
-        #     self.ward_economic_status_persons[person.current_ward_id][person.economic_status] = set()
+        # if person.economic_status not in self.district_economic_status_persons[person.current_district_id]:
+        #     self.district_economic_status_persons[person.current_district_id][person.economic_status] = set()
 
         if action == 'add':
-            # if person.person_id not in self.ward_economic_status_persons[person.current_ward_id][person.economic_status]:
+            # if person.person_id not in self.district_economic_status_persons[person.current_district_id][person.economic_status]:
             # No need to check since this is a `set` anyway.
-            self.ward_economic_status_persons[person.current_ward_id][person.economic_status].add(person.person_id)
+            self.district_economic_status_persons[person.current_district_id][person.economic_status].add(person.person_id)
         elif action == 'remove':
-            # if person.person_id in self.ward_economic_status_persons[person.current_ward_id][person.economic_status]:
+            # if person.person_id in self.district_economic_status_persons[person.current_district_id][person.economic_status]:
             try:
-                self.ward_economic_status_persons[person.current_ward_id][person.economic_status].remove(person.person_id)
+                self.district_economic_status_persons[person.current_district_id][person.economic_status].remove(person.person_id)
             except:
-                # The person is not in the ward, but we save an `if` check.
+                # The person is not in the district, but we save an `if` check.
                 pass
         else:
             raise ValueError(f'Action `{action}` not valid!')
 
     def get_hospital(self, person):
-        # Get hospital in ward.
-        return np.random.choice(self.params.WARD_HOSPITALS[person.current_ward_id])
+        # Get hospital in district.
+        return np.random.choice(self.params.DISTRICT_HOSPITALS[person.current_district_id])
 
     def log_model_output(self):
         if self.scheduler.real_time.hour == 8:

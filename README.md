@@ -49,7 +49,7 @@ The model uses the following data to model various scenarios:
    - age
    - sex
    - household_id
-   - ward_id
+   - district_id
    - economic_status
    - economic_activity_location_id
    - (Optional) school_goers
