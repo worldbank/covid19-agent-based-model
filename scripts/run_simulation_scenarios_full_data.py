@@ -1,9 +1,9 @@
 import subprocess as sub
 import os
 
-num_simulations = 10
+num_simulations = 5
 
-python_path = '/home/wb536061/anaconda3/envs/covid19_abm/bin/python'
+python_path = '/opt/anaconda3/envs/covid19_abm/bin/python'
 
 scenarios = [
     # 'HandWashingRiskScenario',
@@ -23,7 +23,7 @@ scenarios = [
 ]
 
 run_env = os.environ.copy()
-run_env['PATH'] = '/home/wb536061/anaconda3/envs/covid19_abm/bin/:' + run_env['PATH']
+run_env['PATH'] = '/opt/anaconda3/envs/covid19_abm/bin/:' + run_env['PATH']
 run_env['OMP_NUM_THREADS'] = '1'
 
 run_scenarios_script = 'run_scenarios.py'
