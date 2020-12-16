@@ -1,9 +1,16 @@
 import subprocess as sub
 import os
 
+<<<<<<< Updated upstream
 num_simulations = 5
 
 python_path = '/opt/anaconda3/envs/covid19_abm/bin/python'
+=======
+num_simulations = 1
+
+python_path = '/opt/anaconda3/envs/covid19_abm/bin/python'
+
+>>>>>>> Stashed changes
 
 scenarios = [
     # 'HandWashingRiskScenario',
@@ -14,12 +21,15 @@ scenarios = [
     # 'BlockGreatestMobilityScenario',
     'ContinuedLockdownScenario',
     # 'InteractionSensitivityScenario',
-    'OpenSchoolsScenario',
+    # 'OpenSchoolsScenario',
     # 'OpenManufacturingAndSchoolsScenario',
     # 'OpenMiningScenario',
     # 'OpenManufacturingScenario',
     'EasedLockdownScenario',
-    'EasedOpenSchoolsScenario',
+    # 'EasedOpenSchoolsScenario',
+    'Phase1GovernmentOpenSchoolsScenario',
+    'DynamicPhase1GovernmentOpenSchoolsScenario',
+    'AcceleratedGovernmentOpenSchoolsScenario',
 ]
 
 run_env = os.environ.copy()
@@ -29,13 +39,13 @@ run_env['OMP_NUM_THREADS'] = '1'
 run_scenarios_script = 'run_scenarios.py'
 
 process_list = []
-max_process_list = 30  # os.cpu_count() - 4
+max_process_list = 20  # os.cpu_count() - 4
 
 configs = []
 
 sample_size = 100
-seed_num = 100
-R0_set = [1.9, 1.2, 1.4]
+seed_num = 2200  # 1,115 active cases with ~40% asymptomatic on September 1, 2020
+R0_set = [1.0, 1.2, 1.4]
 
 for R0 in R0_set:
     for sim_num in range(num_simulations):
@@ -62,7 +72,8 @@ while True:
 
     for p in completed_procs:
         pix = process_list.index(p)
-        process_list.pop(pix)
+        p = process_list.pop(pix)
+        p.kill()
 
     if len(process_list) == max_process_list:
         continue

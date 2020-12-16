@@ -34,12 +34,12 @@ class HandWashingRiskScenario(Country):
         assert(self.params.SCENARIO == 'HANDWASHING_RISK')
         self.hw_risk = np.array(list(map(
             self.params.DISTRICT_HW_RISK.get,
-            self.params.WARD_IDS  # NOTE: there is an assumed order here that WARD_IDS are properly sorted.
+            self.params.DISTRICT_IDS  # NOTE: there is an assumed order here that DISTRICT_IDS are properly sorted.
         )))
 
         self.severe_disease_risk = np.array(list(map(
             self.params.DISTRICT_SEVERE_DISEASE_RISK.get,
-            self.params.WARD_IDS  # NOTE: there is an assumed order here that WARD_IDS are properly sorted.
+            self.params.DISTRICT_IDS  # NOTE: there is an assumed order here that DISTRICT_IDS are properly sorted.
         )))
 
 
@@ -58,12 +58,12 @@ class HandWashingRiskImproved1Scenario(Country):
         assert(self.params.SCENARIO == 'HANDWASHING_RISK_1')
         self.hw_risk = np.array(list(map(
             self.params.DISTRICT_HW_RISK.get,
-            self.params.WARD_IDS  # NOTE: there is an assumed order here that WARD_IDS are properly sorted.
+            self.params.DISTRICT_IDS  # NOTE: there is an assumed order here that DISTRICT_IDS are properly sorted.
         )))
 
         self.severe_disease_risk = np.array(list(map(
             self.params.DISTRICT_SEVERE_DISEASE_RISK.get,
-            self.params.WARD_IDS  # NOTE: there is an assumed order here that WARD_IDS are properly sorted.
+            self.params.DISTRICT_IDS  # NOTE: there is an assumed order here that DISTRICT_IDS are properly sorted.
         )))
 
 
@@ -82,12 +82,12 @@ class HandWashingRiskImproved2Scenario(Country):
         assert(self.params.SCENARIO == 'HANDWASHING_RISK_2')
         self.hw_risk = np.array(list(map(
             self.params.DISTRICT_HW_RISK.get,
-            self.params.WARD_IDS  # NOTE: there is an assumed order here that WARD_IDS are properly sorted.
+            self.params.DISTRICT_IDS  # NOTE: there is an assumed order here that DISTRICT_IDS are properly sorted.
         )))
 
         self.severe_disease_risk = np.array(list(map(
             self.params.DISTRICT_SEVERE_DISEASE_RISK.get,
-            self.params.WARD_IDS  # NOTE: there is an assumed order here that WARD_IDS are properly sorted.
+            self.params.DISTRICT_IDS  # NOTE: there is an assumed order here that DISTRICT_IDS are properly sorted.
         )))
 
 
@@ -135,13 +135,13 @@ class IsolateVulnerableScenario(Country):
         pass
 
     def scenario_data_postprocessing(self, df):
-        ward_moving_economic_status_ids = [self.params.ECON_STAT_NAME_TO_ID[es] for es in self.params.WARD_MOVING_ECONOMIC_STATUS]
+        district_moving_economic_status_ids = [self.params.ECON_STAT_NAME_TO_ID[es] for es in self.params.DISTRICT_MOVING_ECONOMIC_STATUS]
 
         #### NOTE: SCENARIO SPECIFIC: Execute scenario for isolating vulnerable individuals
         assert(self.params.SCENARIO == 'ISOLATE_VULNERABLE_HOUSE')
-        self.ward_mover = self.WARD_MOVER_TRUE * (
-            np.in1d(self.economic_status_ids, ward_moving_economic_status_ids) &
-            (self.age >= self.params.WARD_MOVEMENT_ALLOWED_AGE) &
+        self.district_mover = self.DISTRICT_MOVER_TRUE * (
+            np.in1d(self.economic_status_ids, district_moving_economic_status_ids) &
+            (self.age >= self.params.DISTRICT_MOVEMENT_ALLOWED_AGE) &
             (self.age < self.params.VULNERABLE_AGE)
         )
         self.economic_activity_location_ids[self.age >= self.params.VULNERABLE_AGE] = (
@@ -163,12 +163,8 @@ class BlockGreatestMobilityScenario(Country):
     def scenario_data_postprocessing(self, df):
         #### NOTE: SCENARIO SPECIFIC: Execute check for blocking places with outbound
         assert(self.params.SCENARIO == 'BLOCK_GREATEST_NEW_DIST')
-        blocked_ids = self.person_ids[np.in1d(self.ward_ids, self.params.BLOCK_WARDS_IDS)]
-        ward_blocked_movers = blocked_ids[self.ward_mover[blocked_ids] == self.WARD_MOVER_TRUE]
-        ward_blocked_allowed_movers = ward_blocked_movers[np.random.random(len(ward_blocked_movers)) < self.params.BLOCK_ALLOWED_PROBABILITY]
 
-        self.ward_mover[ward_blocked_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_blocked_allowed_movers] = self.WARD_MOVER_TRUE
+        self.set_blocked_movers_and_movement_probabilities()
 
 
 class LockdownGreatestMobilityScenario(Country):
@@ -185,17 +181,8 @@ class LockdownGreatestMobilityScenario(Country):
     def scenario_data_postprocessing(self, df):
         #### NOTE: SCENARIO SPECIFIC: Execute check for blocking places with outbound
         assert(self.params.SCENARIO == 'LOCKDOWN_GREATEST_NEW_DIST')
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
 
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
+        self.set_lockdown_movers_and_movement_probabilities(unrestricted_ids=None)
 
 
 class ContinuedLockdownScenario(Country):
@@ -212,17 +199,8 @@ class ContinuedLockdownScenario(Country):
     def scenario_data_postprocessing(self, df):
         #### NOTE: SCENARIO SPECIFIC: Execute check for blocking places with outbound
         assert(self.params.SCENARIO == 'CONTINUED_ALL_LOCKDOWN')
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
 
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
+        self.set_lockdown_movers_and_movement_probabilities(unrestricted_ids=None)
 
 
 class EasedLockdownScenario(Country):
@@ -239,17 +217,8 @@ class EasedLockdownScenario(Country):
     def scenario_data_postprocessing(self, df):
         #### NOTE: SCENARIO SPECIFIC: Execute check for blocking places with outbound
         assert(self.params.SCENARIO == 'EASED_ALL_LOCKDOWN')
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
 
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
+        self.set_lockdown_movers_and_movement_probabilities(unrestricted_ids=None)
 
 
 class OpenMiningScenario(Country):
@@ -271,22 +240,10 @@ class OpenMiningScenario(Country):
         assert(self.params.SCENARIO == 'CONTINUED_ALL_LOCKDOWN_MINING')
         mining_ids = df[~df['household_id'].str.startswith('h_')]['person_id'].values
 
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        lockdown_ids = np.array(list(set(lockdown_ids).difference(mining_ids)))
+        self.set_lockdown_movers_and_movement_probabilities(unrestricted_ids=mining_ids)
 
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
-
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
-
-        # Don't allow miners to move between wards
-        self.ward_mover[mining_ids] = self.WARD_MOVER_FALSE
+        # Don't allow miners to move between districts
+        self.district_mover[mining_ids] = self.DISTRICT_MOVER_FALSE
 
 
 class OpenSchoolsScenario(Country):
@@ -310,25 +267,7 @@ class OpenSchoolsScenario(Country):
         else:
             raise ValueError('Column `school_id_district` or `school_goers` not found!')
 
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        lockdown_ids = np.array(list(set(lockdown_ids).difference(school_educ_ids)))
-
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
-
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
-
-        # Don't allow students/teachers to move between wards
-        self.ward_mover[school_educ_ids] = self.WARD_MOVER_FALSE
-        # During weekends apply mobility restrictions to students/teachers?
-        other_decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[school_educ_ids]])
-        self.economic_status_other_day_movement_probability[school_educ_ids] *= other_decreased_mobility_rate
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=school_educ_ids, set_lockdown=True)
 
 
 class EasedOpenSchoolsScenario(Country):
@@ -352,26 +291,7 @@ class EasedOpenSchoolsScenario(Country):
         else:
             raise ValueError('Column `school_id_district` or `school_goers` not found!')
 
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        lockdown_ids = np.array(list(set(lockdown_ids).difference(school_educ_ids)))
-
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
-
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
-
-        # Don't allow students/teachers to move between wards
-        self.ward_mover[school_educ_ids] = self.WARD_MOVER_FALSE
-        # During weekends apply mobility restrictions to students/teachers?
-        other_decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[school_educ_ids]])
-        self.economic_status_other_day_movement_probability[school_educ_ids] *= other_decreased_mobility_rate
-
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=school_educ_ids, set_lockdown=True)
 
 class OpenSchoolsSeedKidsScenario(Country):
     def __init__(self, params, model_log_file=None, individual_log_file=None):
@@ -389,25 +309,7 @@ class OpenSchoolsSeedKidsScenario(Country):
         assert(self.params.SCENARIO == 'CONTINUED_ALL_LOCKDOWN_SCHOOLS_SEED_KIDS')
         school_educ_ids = df[df['school_id_district'] != '']['person_id'].values
 
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        lockdown_ids = np.array(list(set(lockdown_ids).difference(school_educ_ids)))
-
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
-
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
-
-        # Don't allow students/teachers to move between wards
-        self.ward_mover[school_educ_ids] = self.WARD_MOVER_FALSE
-        # During weekends apply mobility restrictions to students/teachers?
-        other_decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[school_educ_ids]])
-        self.economic_status_other_day_movement_probability[school_educ_ids] *= other_decreased_mobility_rate
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=school_educ_ids, set_lockdown=True)
 
 
 class OpenManufacturingScenario(Country):
@@ -426,25 +328,7 @@ class OpenManufacturingScenario(Country):
 
         manufacturing_ids = df[df['manufacturing_workers'].notnull()]['person_id'].values
 
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        lockdown_ids = np.array(list(set(lockdown_ids).difference(manufacturing_ids)))
-
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
-
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
-
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
-
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
-
-        # Don't allow manufacturers to move between wards
-        self.ward_mover[manufacturing_ids] = self.WARD_MOVER_FALSE
-        # During weekends apply mobility restrictions to manufacturing workers?
-        other_decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[manufacturing_ids]])
-        self.economic_status_other_day_movement_probability[manufacturing_ids] *= other_decreased_mobility_rate
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=manufacturing_ids, set_lockdown=True)
 
 
 class OpenManufacturingAndSchoolsScenario(Country):
@@ -466,25 +350,94 @@ class OpenManufacturingAndSchoolsScenario(Country):
 
         manufacturing_and_school_ids = np.array(list(set(manufacturing_ids).union(school_educ_ids)))
 
-        lockdown_ids = self.person_ids[np.in1d(self.ward_ids, self.params.LOCKDOWN_WARDS_IDS)]
-        lockdown_ids = np.array(list(set(lockdown_ids).difference(manufacturing_and_school_ids)))
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=manufacturing_and_school_ids, set_lockdown=True)
 
-        ward_lockdown_movers = lockdown_ids[self.ward_mover[lockdown_ids] == self.WARD_MOVER_TRUE]
-        ward_lockdown_allowed_movers = ward_lockdown_movers[np.random.random(len(ward_lockdown_movers)) < self.params.LOCKDOWN_ALLOWED_PROBABILITY]
 
-        self.ward_mover[ward_lockdown_movers] = self.WARD_MOVER_FALSE
-        self.ward_mover[ward_lockdown_allowed_movers] = self.WARD_MOVER_TRUE
+class Phase1GovernmentOpenSchoolsScenario(Country):
+    def __init__(self, params, model_log_file=None, individual_log_file=None):
+        super().__init__(
+            params, model_log_file=model_log_file,
+            individual_log_file=individual_log_file)
 
-        decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[lockdown_ids]])
+        self.is_school_scenario = True
 
-        self.economic_status_weekday_movement_probability[lockdown_ids] *= decreased_mobility_rate
-        self.economic_status_other_day_movement_probability[lockdown_ids] *= decreased_mobility_rate
+        # Find students tagged for phase 1
+        # Set their economic_activity_location_id as the school_id.
+        # Run model until Jan. 2021.
 
-        # Don't allow manufacturers and schools to move between wards
-        self.ward_mover[manufacturing_and_school_ids] = self.WARD_MOVER_FALSE
-        # During weekends apply mobility restrictions to manufacturing workers and schools?
-        other_decreased_mobility_rate = np.array([self.params.LOCKDOWN_DECREASED_MOBILITY_RATE[i] for i in self.ward_ids[manufacturing_and_school_ids]])
-        self.economic_status_other_day_movement_probability[manufacturing_and_school_ids] *= other_decreased_mobility_rate
+        self.params.scenario_phase1_government_open_schools()
+
+    def scenario_data_preprocessing(self, df):
+        pass
+
+    def scenario_data_postprocessing(self, df):
+        #### NOTE: SCENARIO SPECIFIC: Continued lockdown with mining open
+        assert(self.params.SCENARIO == 'PHASE1_GOVERNMENT_OPEN_SCHOOLS')
+        if "phase" in df:
+            school_educ_ids = df[df["phase"] == 1]["person_id"].values
+        else:
+            raise ValueError("Column `phase` not found!")
+
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=school_educ_ids, set_lockdown=True)
+        self.set_school_params(df)
+
+
+class DynamicPhase1GovernmentOpenSchoolsScenario(Country):
+    def __init__(self, params, model_log_file=None, individual_log_file=None):
+        super().__init__(
+            params, model_log_file=model_log_file,
+            individual_log_file=individual_log_file)
+
+        self.is_school_scenario = True
+
+        # Find students tagged for phase 1
+        # Set their economic_activity_location_id as the school_id.
+        # For every end of month, find the current symptomatic infection rate for each district.
+        # Get the top 25% highest infection rate districts and set students to not go to school.
+        # Run model until Jan. 2021.
+
+        self.params.scenario_dynamic_phase1_government_open_schools()
+
+    def scenario_data_preprocessing(self, df):
+        pass
+
+    def scenario_data_postprocessing(self, df):
+        #### NOTE: SCENARIO SPECIFIC: Continued lockdown with mining open
+        assert(self.params.SCENARIO == 'DYNAMIC_PHASE1_GOVERNMENT_OPEN_SCHOOLS')
+        if "phase" in df:
+            school_educ_ids = df[df["phase"] == 1]["person_id"].values
+        else:
+            raise ValueError("Column `phase` not found!")
+
+        # NOTE: ADD SCHOOL IDS column to be used dynamic opening of schools
+
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=school_educ_ids, set_lockdown=True)
+        self.set_school_params(df)
+
+
+class AcceleratedGovernmentOpenSchoolsScenario(Country):
+    def __init__(self, params, model_log_file=None, individual_log_file=None):
+        super().__init__(
+            params, model_log_file=model_log_file,
+            individual_log_file=individual_log_file)
+
+        self.is_school_scenario = True
+
+        self.params.scenario_accelerated_government_open_schools()
+
+    def scenario_data_preprocessing(self, df):
+        pass
+
+    def scenario_data_postprocessing(self, df):
+        #### NOTE: SCENARIO SPECIFIC: Continued lockdown with mining open
+        assert(self.params.SCENARIO == 'ACCELERATED_GOVERNMENT_OPEN_SCHOOLS')
+        if "phase" in df:
+            school_educ_ids = df[df["phase"] > 0]["person_id"].values
+        else:
+            raise ValueError("Column `phase` not found!")
+
+        self.setup_selective_movement_restriction_scenarios(unrestricted_ids=school_educ_ids, set_lockdown=True)
+        self.set_school_params(df)
 
 
 def run_scenario(scenarioClass, scenario_name, sim_fname, R0, sample_size, seed_num, start_date=None, timestep=timedelta(hours=4), scaled_mobility=False):
@@ -517,7 +470,8 @@ def run_scenario(scenarioClass, scenario_name, sim_fname, R0, sample_size, seed_
 
     params = ParamsConfig(
         district='new', data_sample_size=sample_size, R0=R0,
-        interaction_matrix_file=get_data_dir('raw', 'final_close_interaction_matrix.xlsx'),
+        normal_interaction_matrix_file=('/Users/sophieayling/Documents/GitHub/covid19-agent-based-model/data/raw/final_close_interaction_matrix.xlsx'),
+        lockdown_interaction_matrix_file=('/Users/sophieayling/Documents/GitHub/covid19-agent-based-model/data/raw/final_close_interaction_matrix.xlsx'),
         stay_duration_file=get_data_dir('preprocessed', 'mobility', stay_duration_file),
         transition_probability_file=get_data_dir('preprocessed', 'mobility', transition_probability_file),
         timestep=timestep
@@ -532,7 +486,7 @@ def run_scenario(scenarioClass, scenario_name, sim_fname, R0, sample_size, seed_
 
     model.load_agents(params.data_file_name, size=None, infect_num=params.SEED_INFECT_NUM)
     # end_date = model.scheduler.real_time + timedelta(days=30 * 24, hours=4)
-    end_date = datetime(2020, 12, 1)
+    end_date = datetime(2021, 6, 1)
 
     while model.scheduler.real_time <= end_date:
         model.step()
